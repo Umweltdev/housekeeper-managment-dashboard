@@ -9,19 +9,10 @@ export const CLEANING_TASKS = [
     status: 'inspected',
     createDate: '2023-06-10T08:00:00',
     type: 'cleaning',
+    assignedTo: 'John Doe',
     maintenanceAndDamages: [
-      {
-        id: 'm1',
-        type: 'maintenance',
-        description: 'Bathroom faucet leaking',
-        priority: 'High',
-      },
-      {
-        id: 'd1',
-        type: 'damage',
-        description: 'Crack in wall tile',
-        priority: 'Medium',
-      },
+      { id: 'm1', type: 'maintenance', description: 'Bathroom faucet leaking', priority: 'High' },
+      { id: 'd1', type: 'damage', description: 'Crack in wall tile', priority: 'Medium' },
     ],
   },
   {
@@ -34,13 +25,9 @@ export const CLEANING_TASKS = [
     status: 'inspected',
     createDate: '2023-06-10T09:00:00',
     type: 'cleaning',
+    assignedTo: 'Mabel Okoro',
     maintenanceAndDamages: [
-      {
-        id: 'd2',
-        type: 'damage',
-        description: 'Headboard scratched',
-        priority: 'Low',
-      },
+      { id: 'd2', type: 'damage', description: 'Headboard scratched', priority: 'Low' },
     ],
   },
   {
@@ -53,19 +40,10 @@ export const CLEANING_TASKS = [
     status: 'cleaned',
     createDate: '2023-06-09T10:00:00',
     type: 'cleaning',
+    assignedTo: 'Samuel Ajayi',
     maintenanceAndDamages: [
-      {
-        id: 'm3',
-        type: 'maintenance',
-        description: 'AC not cooling',
-        priority: 'High',
-      },
-      {
-        id: 'd3',
-        type: 'damage',
-        description: 'Mirror cracked',
-        priority: 'Medium',
-      },
+      { id: 'm3', type: 'maintenance', description: 'AC not cooling', priority: 'High' },
+      { id: 'd3', type: 'damage', description: 'Mirror cracked', priority: 'Medium' },
     ],
   },
   {
@@ -78,6 +56,7 @@ export const CLEANING_TASKS = [
     status: 'dirty',
     createDate: '2023-06-11T08:00:00',
     type: 'cleaning',
+    assignedTo: 'Olivia Martins',
     maintenanceAndDamages: [],
   },
   {
@@ -90,13 +69,9 @@ export const CLEANING_TASKS = [
     status: 'cleaned',
     createDate: '2023-06-08T11:00:00',
     type: 'cleaning',
+    assignedTo: 'Ben Chukwu',
     maintenanceAndDamages: [
-      {
-        id: 'm5',
-        type: 'maintenance',
-        description: 'TV remote not working',
-        priority: 'Low',
-      },
+      { id: 'm5', type: 'maintenance', description: 'TV remote not working', priority: 'Low' },
     ],
   },
   {
@@ -109,6 +84,7 @@ export const CLEANING_TASKS = [
     status: 'inspected',
     createDate: '2023-06-10T10:00:00',
     type: 'cleaning',
+    assignedTo: 'Grace Nwosu',
     maintenanceAndDamages: [],
   },
   {
@@ -121,13 +97,9 @@ export const CLEANING_TASKS = [
     status: 'cleaned',
     createDate: '2023-06-09T09:00:00',
     type: 'cleaning',
+    assignedTo: 'Daniel Peters',
     maintenanceAndDamages: [
-      {
-        id: 'd7',
-        type: 'damage',
-        description: 'Broken wardrobe door',
-        priority: 'High',
-      },
+      { id: 'd7', type: 'damage', description: 'Broken wardrobe door', priority: 'High' },
     ],
   },
   {
@@ -140,13 +112,9 @@ export const CLEANING_TASKS = [
     status: 'inspected',
     createDate: '2023-06-11T10:00:00',
     type: 'cleaning',
+    assignedTo: 'Rita Bello',
     maintenanceAndDamages: [
-      {
-        id: 'm8',
-        type: 'maintenance',
-        description: 'Clogged shower drain',
-        priority: 'Medium',
-      },
+      { id: 'm8', type: 'maintenance', description: 'Clogged shower drain', priority: 'Medium' },
     ],
   },
   {
@@ -159,6 +127,7 @@ export const CLEANING_TASKS = [
     status: 'cleaned',
     createDate: '2023-06-09T08:00:00',
     type: 'cleaning',
+    assignedTo: 'Ifeoma Ude',
     maintenanceAndDamages: [],
   },
   {
@@ -171,13 +140,9 @@ export const CLEANING_TASKS = [
     status: 'inspected',
     createDate: '2023-06-10T12:00:00',
     type: 'cleaning',
+    assignedTo: 'Victor Aina',
     maintenanceAndDamages: [
-      {
-        id: 'd10',
-        type: 'damage',
-        description: 'Window curtain torn',
-        priority: 'Medium',
-      },
+      { id: 'd10', type: 'damage', description: 'Window curtain torn', priority: 'Medium' },
     ],
   },
   {
@@ -190,6 +155,7 @@ export const CLEANING_TASKS = [
     status: 'inspected',
     createDate: '2023-06-11T09:00:00',
     type: 'cleaning',
+    assignedTo: 'Laura King',
     maintenanceAndDamages: [],
   },
   {
@@ -202,13 +168,9 @@ export const CLEANING_TASKS = [
     status: 'cleaned',
     createDate: '2023-06-10T07:00:00',
     type: 'cleaning',
+    assignedTo: 'Emeka Obi',
     maintenanceAndDamages: [
-      {
-        id: 'm12',
-        type: 'maintenance',
-        description: 'Light bulb flickering',
-        priority: 'Low',
-      },
+      { id: 'm12', type: 'maintenance', description: 'Light bulb flickering', priority: 'Low' },
     ],
   },
   {
@@ -221,13 +183,9 @@ export const CLEANING_TASKS = [
     status: 'dirty',
     createDate: '2023-06-12T09:00:00',
     type: 'cleaning',
+    assignedTo: 'Yusuf Ibrahim',
     maintenanceAndDamages: [
-      {
-        id: 'd13',
-        type: 'damage',
-        description: 'Carpet heavily stained',
-        status: 'open',
-      },
+      { id: 'd13', type: 'damage', description: 'Carpet heavily stained', status: 'open' },
     ],
   },
   {
@@ -240,13 +198,9 @@ export const CLEANING_TASKS = [
     status: 'dirty',
     createDate: '2023-06-12T10:00:00',
     type: 'cleaning',
+    assignedTo: 'Chinwe Eze',
     maintenanceAndDamages: [
-      {
-        id: 'm14',
-        type: 'maintenance',
-        description: 'Toilet plumbing issue',
-        status: 'open',
-      },
+      { id: 'm14', type: 'maintenance', description: 'Toilet plumbing issue', status: 'open' },
     ],
   },
   {
@@ -259,13 +213,9 @@ export const CLEANING_TASKS = [
     status: 'dirty',
     createDate: '2023-06-12T11:00:00',
     type: 'cleaning',
+    assignedTo: 'Pauline Akpan',
     maintenanceAndDamages: [
-      {
-        id: 'd15',
-        type: 'damage',
-        description: 'Mirror cracked and loose',
-        status: 'in-progress',
-      },
+      { id: 'd15', type: 'damage', description: 'Mirror cracked and loose', status: 'in-progress' },
       {
         id: 'm15',
         type: 'maintenance',
@@ -284,13 +234,9 @@ export const CLEANING_TASKS = [
     status: 'dirty',
     createDate: '2023-06-12T12:00:00',
     type: 'cleaning',
+    assignedTo: 'Kemi Olatunji',
     maintenanceAndDamages: [
-      {
-        id: 'd16',
-        type: 'damage',
-        description: 'Wine stain on upholstery',
-        status: 'open',
-      },
+      { id: 'd16', type: 'damage', description: 'Wine stain on upholstery', status: 'open' },
     ],
   },
   {
@@ -303,6 +249,7 @@ export const CLEANING_TASKS = [
     status: 'dirty',
     createDate: '2023-06-12T13:00:00',
     type: 'cleaning',
+    assignedTo: 'Tunde Balogun',
     maintenanceAndDamages: [],
   },
 ];

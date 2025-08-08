@@ -50,11 +50,11 @@ const TABLE_HEAD = [
   { id: 'room', label: 'Room' },
   { id: 'category', label: 'Room Category' },
   { id: 'description', label: 'Task Description' },
-  { id: 'assignedTo', label: 'Assigned To' },
+  { id: 'assignedTo', label: 'Assigned To' }, // Already here
   { id: 'dueDate', label: 'Due Date' },
   { id: 'priority', label: 'Priority' },
   { id: 'status', label: 'Cleaning Status' },
-  { id: '', label: '' },
+  { id: '', label: '' }, // Actions
 ];
 
 const defaultFilters = {
@@ -75,8 +75,6 @@ export default function InvoiceListViewEdit() {
   const settings = useSettingsContext();
 
   const invoices = CLEANING_TASKS;
-
-  console.log(invoices);
 
   const router = useRouter();
 
@@ -109,7 +107,7 @@ export default function InvoiceListViewEdit() {
     table.page * table.rowsPerPage + table.rowsPerPage
   );
 
-  const denseHeight = table.dense ? 56 : 56 + 20;
+  const denseHeight = table.dense ? 56 : 76;
 
   const canReset =
     !!filters?.name ||
@@ -129,25 +127,9 @@ export default function InvoiceListViewEdit() {
 
   const TABS = [
     { value: 'all', label: 'All Tasks', color: 'default', count: tableData.length },
-    {
-      value: 'cleaned',
-      label: 'Cleaned',
-      color: 'success',
-      count: getInvoiceLength('cleaned'),
-    },
-
-    {
-      value: 'inspected',
-      label: 'Inspected',
-      color: 'info',
-      count: getInvoiceLength('inspected'),
-    },
-    {
-      value: 'dirty',
-      label: 'Dirty',
-      color: 'error',
-      count: getInvoiceLength('dirty'),
-    },
+    { value: 'cleaned', label: 'Cleaned', color: 'success', count: getInvoiceLength('cleaned') },
+    { value: 'inspected', label: 'Inspected', color: 'info', count: getInvoiceLength('inspected') },
+    { value: 'dirty', label: 'Dirty', color: 'error', count: getInvoiceLength('dirty') },
   ];
 
   const handleFilters = useCallback(
@@ -176,11 +158,8 @@ export default function InvoiceListViewEdit() {
 
   const handleDeleteRows = useCallback(() => {
     const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-
     enqueueSnackbar('Delete success!');
-
     setTableData(deleteRows);
-
     table.onUpdatePageDeleteRows({
       totalRowsInPage: dataInPage.length,
       totalRowsFiltered: dataFiltered.length,
@@ -201,6 +180,16 @@ export default function InvoiceListViewEdit() {
     [router]
   );
 
+  const handleMoveToInspected = useCallback(
+    (id) => {
+      setTableData((prev) =>
+        prev.map((task) => (task.id === id ? { ...task, status: 'inspected' } : task))
+      );
+      enqueueSnackbar('Task moved to Inspected!');
+    },
+    [enqueueSnackbar]
+  );
+
   const handleFilterStatus = useCallback(
     (event, newValue) => {
       handleFilters('status', newValue);
@@ -210,7 +199,6 @@ export default function InvoiceListViewEdit() {
 
   return (
     <>
-      {/* <Container maxWidth={settings.themeStretch ? false : 'lg'}> */}
       <Card>
         <Tabs
           value={filters.status}
@@ -243,7 +231,6 @@ export default function InvoiceListViewEdit() {
         <InvoiceTableToolbar
           filters={filters}
           onFilters={handleFilters}
-          //
           dateError={dateError}
           serviceOptions={INVOICE_SERVICE_OPTIONS.map((option) => option?.name)}
         />
@@ -252,9 +239,7 @@ export default function InvoiceListViewEdit() {
           <InvoiceTableFiltersResult
             filters={filters}
             onFilters={handleFilters}
-            //
             onResetFilters={handleResetFilters}
-            //
             results={dataFiltered.length}
             sx={{ p: 2.5, pt: 0 }}
           />
@@ -273,24 +258,6 @@ export default function InvoiceListViewEdit() {
             }}
             action={
               <Stack direction="row">
-                <Tooltip title="Sent">
-                  <IconButton color="primary">
-                    <Iconify icon="iconamoon:send-fill" />
-                  </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Download">
-                  <IconButton color="primary">
-                    <Iconify icon="eva:download-outline" />
-                  </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Print">
-                  <IconButton color="primary">
-                    <Iconify icon="solar:printer-minimalistic-bold" />
-                  </IconButton>
-                </Tooltip>
-
                 <Tooltip title="Delete">
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
@@ -332,6 +299,7 @@ export default function InvoiceListViewEdit() {
                       onViewRow={() => handleViewRow(row.id)}
                       onEditRow={() => handleEditRow(row.id)}
                       onDeleteRow={() => handleDeleteRow(row.id)}
+                      onMoveToInspected={handleMoveToInspected} // NEW
                     />
                   ))}
 
@@ -352,12 +320,10 @@ export default function InvoiceListViewEdit() {
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           onRowsPerPageChange={table.onChangeRowsPerPage}
-          //
           dense={table.dense}
           onChangeDense={table.onChangeDense}
         />
       </Card>
-      {/* </Container> */}
 
       <ConfirmDialog
         open={confirm.value}
@@ -402,9 +368,9 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
 
   if (name) {
     inputData = inputData.filter(
-      (invoice) =>
-        invoice?.invoiceNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-        invoice?.invoiceTo?.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
+      (task) =>
+        task?.room.toLowerCase().includes(name.toLowerCase()) ||
+        task?.assignedTo?.toLowerCase().includes(name.toLowerCase())
     );
   }
 
@@ -418,14 +384,12 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
 
   if (service.length) {
     inputData = inputData.filter((invoice) =>
-      invoice.items.some((filterItem) => service.includes(filterItem.service))
+      invoice.items?.some((filterItem) => service.includes(filterItem.service))
     );
   }
 
-  if (!dateError) {
-    if (startDate && endDate) {
-      inputData = inputData.filter((invoice) => isBetween(invoice.createDate, startDate, endDate));
-    }
+  if (!dateError && startDate && endDate) {
+    inputData = inputData.filter((task) => isBetween(task.createDate, startDate, endDate));
   }
 
   return inputData;

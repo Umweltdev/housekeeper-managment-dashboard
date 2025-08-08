@@ -11,7 +11,6 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-
 import { fDate, fTime } from 'src/utils/format-time';
 
 import Label from 'src/components/label';
@@ -28,35 +27,53 @@ export default function CleaningTaskTableRow({
   onEditRow,
   onDeleteRow,
 }) {
-  const { room, category, description, dueDate, priority, status } = row;
+  const { room, category, description, assignedTo, dueDate, priority, status } = row;
 
   const confirm = useBoolean();
   const popover = usePopover();
 
   const [markingCleaned, setMarkingCleaned] = useState(false);
+  const [markingInspected, setMarkingInspected] = useState(false);
 
   const canMarkAsCleaned = status === 'dirty';
+  const canMarkAsInspected = status === 'cleaned';
 
   const handleMarkAsCleaned = async () => {
     setMarkingCleaned(true);
-
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Trigger update event to parent
     if (typeof window !== 'undefined') {
-      const event = new CustomEvent('taskStatusUpdated', { detail: row.id });
+      const event = new CustomEvent('taskStatusUpdated', {
+        detail: { id: row.id, status: 'cleaned' },
+      });
       window.dispatchEvent(event);
     }
-
     setMarkingCleaned(false);
     popover.onClose();
   };
 
-  const tooltipTitle = (() => {
+  const handleMarkAsInspected = async () => {
+    setMarkingInspected(true);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    if (typeof window !== 'undefined') {
+      const event = new CustomEvent('taskStatusUpdated', {
+        detail: { id: row.id, status: 'inspected' },
+      });
+      window.dispatchEvent(event);
+    }
+    setMarkingInspected(false);
+    popover.onClose();
+  };
+
+  const tooltipCleaned = (() => {
     if (canMarkAsCleaned) return '';
     if (status === 'cleaned') return 'Already cleaned';
     return 'Cannot mark this task as cleaned';
+  })();
+
+  const tooltipInspected = (() => {
+    if (canMarkAsInspected) return '';
+    if (status === 'inspected') return 'Already inspected';
+    return 'Cannot mark this task as inspected';
   })();
 
   return (
@@ -69,6 +86,7 @@ export default function CleaningTaskTableRow({
         <TableCell>{room}</TableCell>
         <TableCell>{category}</TableCell>
         <TableCell>{description}</TableCell>
+        <TableCell>{assignedTo}</TableCell>
 
         <TableCell>
           <Typography variant="body2">{fDate(dueDate)}</Typography>
@@ -120,30 +138,30 @@ export default function CleaningTaskTableRow({
         arrow="right-top"
         sx={{ width: 200 }}
       >
-        {/* Mark as Cleaned with highlight */}
-        <Tooltip title={tooltipTitle}>
+        {/* Mark as Inspected */}
+        <Tooltip title={tooltipInspected}>
           <span>
             <MenuItem
-              disabled={markingCleaned || !canMarkAsCleaned || status === 'cleaned'}
-              onClick={handleMarkAsCleaned}
+              disabled={markingInspected || !canMarkAsInspected}
+              onClick={handleMarkAsInspected}
               sx={{
-                bgcolor: 'success.main',
+                bgcolor: 'info.main',
                 color: 'common.white',
                 borderRadius: 1,
                 my: 1,
                 fontWeight: 'bold',
                 '&:hover': {
-                  bgcolor: 'success.dark',
+                  bgcolor: 'info.dark',
                 },
-                opacity: !canMarkAsCleaned || status === 'cleaned' ? 0.5 : 1,
+                opacity: !canMarkAsInspected ? 0.5 : 1,
               }}
             >
-              {markingCleaned ? (
+              {markingInspected ? (
                 <Iconify icon="eos-icons:loading" width={20} />
               ) : (
-                <Iconify icon="ic:round-check-circle" />
+                <Iconify icon="mdi:clipboard-check" />
               )}
-              Mark as Cleaned
+              Mark as Inspected
             </MenuItem>
           </span>
         </Tooltip>
@@ -158,17 +176,6 @@ export default function CleaningTaskTableRow({
           <Iconify icon="solar:pen-bold" />
           Edit
         </MenuItem>
-
-        {/* Delete Option */}
-        {/* <MenuItem
-          onClick={() => {
-            confirm.onTrue();
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:trash-bin-trash-bold" />
-          Delete
-        </MenuItem> */}
       </CustomPopover>
 
       {/* Confirm Delete Dialog */}

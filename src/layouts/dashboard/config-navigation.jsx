@@ -121,7 +121,7 @@ export function useNavData() {
           // },
           // USER
           {
-            title: t('my task'),
+            title: t('Task Assignments'),
             path: paths.dashboard.user.list,
             icon: ICONS.blog,
           },
