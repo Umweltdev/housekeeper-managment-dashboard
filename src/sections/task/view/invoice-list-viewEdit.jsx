@@ -50,6 +50,7 @@ const TABLE_HEAD = [
   { id: 'room', label: 'Room' },
   { id: 'category', label: 'Room Category' },
   { id: 'description', label: 'Task Description' },
+  { id: 'assignedTo', label: 'Assigned To' },
   { id: 'dueDate', label: 'Due Date' },
   { id: 'priority', label: 'Priority' },
   { id: 'status', label: 'Cleaning Status' },
@@ -91,12 +92,6 @@ export default function InvoiceListViewEdit() {
     );
     setTableData(sortedInvoices);
   }, [invoices]);
-
-  // I just want to get cancelled invoices here
-  const cancelledInvoices = invoices
-    .filter((invoice) => invoice.status === 'cancelled')
-    .sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
-  // console.log(cancelledInvoices);
 
   const [filters, setFilters] = useState(defaultFilters);
 

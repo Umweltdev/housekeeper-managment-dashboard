@@ -37,7 +37,7 @@ export default function AppWidgetSummary({ title, percent, total, chart, sx, ...
           secondary: theme.palette.success.light,
           icon: 'solar:check-circle-bold-duotone',
         };
-      case 'Total Task':
+      case 'Total Task Assigned':
       case 'Pending Review':
         return {
           primary: theme.palette.info.main,
@@ -50,7 +50,7 @@ export default function AppWidgetSummary({ title, percent, total, chart, sx, ...
           secondary: theme.palette.secondary.light,
           icon: 'solar:stop-circle-bold-duotone',
         };
-      case 'Low Priority':
+      case 'Cleaned Rooms':
         return {
           primary: alpha(theme.palette.success.main, 0.7),
           secondary: alpha(theme.palette.success.light, 0.5),

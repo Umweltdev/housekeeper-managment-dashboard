@@ -193,11 +193,11 @@ export default function UserListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="My Task"
+          heading="Room Cleaning Assignments"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             // { name: 'Check-In', href: paths.dashboard.booking.root },
-            { name: 'Task' },
+            { name: 'Room Cleanin' },
           ]}
           sx={{
             mb: { xs: 3, md: 5 },
@@ -219,7 +219,7 @@ export default function UserListView() {
         >
           {[
             {
-              title: 'Total Task',
+              title: 'Total Task Assigned',
               icon: 'bi:list-task',
               iconColor: 'info.main',
               total: 23,
@@ -250,7 +250,7 @@ export default function UserListView() {
               },
             },
             {
-              title: 'Completed Tasks',
+              title: 'Cleaned Rooms',
               icon: 'solar:check-circle-bold-duotone',
               iconColor: 'success.main',
               total: 4,
