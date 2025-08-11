@@ -7,189 +7,254 @@ import { useSnackbar } from 'notistack';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
+import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import Divider from '@mui/material/Divider';
+import CircularProgress from '@mui/material/CircularProgress';
 
+import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
-
-import axiosInstance from 'src/utils/axios';
-
-import { useGetUser } from 'src/api/user';
-
-import Label from 'src/components/label';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-
-import UserBookingTable from './user-booking-table';
+import Iconify from 'src/components/iconify';
 
 export default function UserDetailsView({ id }) {
   const settings = useSettingsContext();
-  const { enqueueSnackbar } = useSnackbar(); // For notifications
+  const { enqueueSnackbar } = useSnackbar();
+  const router = useRouter();
 
-  const { user: currentUser } = useGetUser(id);
+  // Mock staff list (replace with API data)
+  const staffList = ['John Doe', 'Jane Smith', 'Michael Brown', 'Emily Davis', 'Chris Johnson'];
 
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false); // Dialog state
+  const [isSaving, setIsSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    room: '',
+    category: '',
+    description: '',
+    dueDate: '',
+    priority: '',
+    status: '',
+    assignedTo: '',
+    type: 'cleaning',
+    createDate: new Date().toISOString().slice(0, 16),
+  });
 
-  const handleDeleteUser = async () => {
+  const handleReset = () => {
+    setFormData({
+      room: '',
+      category: '',
+      description: '',
+      dueDate: '',
+      priority: '',
+      status: '',
+      assignedTo: '',
+      type: 'cleaning',
+      createDate: new Date().toISOString().slice(0, 16),
+    });
+  };
+
+  const handleSubmit = async () => {
+    setIsSaving(true);
     try {
-      // Call the API to delete the user
-      await axiosInstance.delete(`/api/user/${id}`);
-
-      // Show success notification
-      enqueueSnackbar('User deleted successfully', { variant: 'success' });
-
-      // Optionally redirect or refresh the page
-      window.location.href = paths.dashboard.user.root; // Redirect to user list
-    } catch (error) {
-      console.error(error);
-
-      // Show error notification
-      enqueueSnackbar('User deleted successfully.', { variant: 'success' });
+      // Simulate save
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      enqueueSnackbar('Task created successfully!', { variant: 'success' });
+      console.log('Submitting task:', formData);
+      router.push(paths.dashboard.user.list);
     } finally {
-      setOpenConfirmDialog(false); // Close the dialog
+      setIsSaving(false);
     }
   };
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading={currentUser?.firstName}
+        heading="Create Cleaning Task"
         links={[
-          {
-            name: 'Dashboard',
-            href: paths.dashboard.root,
-          },
-          {
-            name: 'User',
-            href: paths.dashboard.user.root,
-          },
-          { name: currentUser?.firstName },
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Room Cleaning Assignments', href: paths.dashboard.user.list },
+          { name: 'Create Task' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-      <Grid container spacing={3}>
-        <Grid xs={12} md={4}>
-          <Card sx={{ pt: 10, pb: 5, px: 3 }}>
-            <Label
-              color={
-                (currentUser?.status === 'active' && 'success') ||
-                (currentUser?.status === 'banned' && 'error') ||
-                'warning'
-              }
-              sx={{ position: 'absolute', top: 24, right: 24 }}
-            >
-              {currentUser?.status}
-            </Label>
-            <Box sx={{ mb: 5, textAlign: 'center' }}>
-              <img
-                src={
-                  currentUser?.img?.preview ||
-                  currentUser?.img ||
-                  '/assets/illustrations/avatar.png'
-                }
-                alt={`${currentUser?.firstName} ${currentUser?.lastName}`}
-                style={{ width: '120px', height: '120px', borderRadius: '50%' }}
+
+      <Grid container spacing={4}>
+        {/* Left: Task Creation Form */}
+        <Grid item xs={12} md={8}>
+          <Card sx={{ p: 4, boxShadow: 3 }}>
+            <Stack spacing={3}>
+              <TextField
+                fullWidth
+                label="Room Number"
+                value={formData.room}
+                onChange={(e) => setFormData({ ...formData, room: e.target.value })}
               />
-              <Box
-                sx={{ mt: 2, display: 'flex', gap: 1, margin: 'auto', justifyContent: 'center' }}
+
+              <TextField
+                select
+                fullWidth
+                label="Category"
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               >
-                <Typography variant="h6">{currentUser?.firstName}</Typography>
-                <Typography variant="h6">{currentUser?.lastName}</Typography>
-              </Box>
-              {/* <Typography
-                variant="caption"
-                sx={{ display: 'block', mt: 2, color: 'text.secondary' }}
+                <MenuItem value="Standard">Standard</MenuItem>
+                <MenuItem value="Deluxe">Deluxe</MenuItem>
+                <MenuItem value="Suite">Suite</MenuItem>
+              </TextField>
+
+              <TextField
+                fullWidth
+                multiline
+                rows={3}
+                label="Description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              />
+
+              <TextField
+                type="datetime-local"
+                fullWidth
+                label="Due Date"
+                InputLabelProps={{ shrink: true }}
+                value={formData.dueDate}
+                onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+              />
+
+              <TextField
+                select
+                fullWidth
+                label="Priority"
+                value={formData.priority}
+                onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
               >
-                Allowed *.jpeg, *.jpg, *.png, *.gif
-                <br /> max size of {fData(3145728)}
-              </Typography> */}
-            </Box>
-            {/* <Stack justifyContent="center" alignItems="center" sx={{ mt: 3 }}>
-              <Button
-                variant="soft"
-                color="error"
-                onClick={() => setOpenConfirmDialog(true)} // Open the confirmation dialog
+                <MenuItem value="Low">Low</MenuItem>
+                <MenuItem value="Medium">Medium</MenuItem>
+                <MenuItem value="High">High</MenuItem>
+              </TextField>
+
+              <TextField
+                select
+                fullWidth
+                label="Status"
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
               >
-                Delete User
-              </Button>
-            </Stack> */}
+                <MenuItem value="dirty">Dirty</MenuItem>
+                <MenuItem value="cleaned">Cleaned</MenuItem>
+                <MenuItem value="inspected">Inspected</MenuItem>
+              </TextField>
+
+              <TextField
+                select
+                fullWidth
+                label="Assigned To"
+                value={formData.assignedTo}
+                onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
+              >
+                {staffList.map((staff, index) => (
+                  <MenuItem key={index} value={staff}>
+                    {staff}
+                  </MenuItem>
+                ))}
+              </TextField>
+
+              <Divider />
+
+              <Stack direction="row" spacing={2} justifyContent="flex-end">
+                <Button variant="outlined" onClick={handleReset}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSubmit}
+                  startIcon={
+                    isSaving ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      <Iconify icon="eva:save-fill" />
+                    )
+                  }
+                  disabled={isSaving || !formData.room || !formData.assignedTo}
+                  sx={{ minWidth: 140 }}
+                >
+                  {isSaving ? 'Saving...' : 'Create Task'}
+                </Button>
+              </Stack>
+            </Stack>
           </Card>
         </Grid>
-        <Grid xs={12} md={8}>
-          <Card sx={{ p: 3 }}>
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-              }}
-            >
-              <Box>
-                <Typography variant="subtitle2">First Name</Typography>
-                <Typography variant="body2">{currentUser?.firstName}</Typography>
-              </Box>
-              <Box>
-                <Typography variant="subtitle2">Last Name</Typography>
-                <Typography variant="body2">{currentUser?.lastName}</Typography>
-              </Box>
-              <Box>
-                <Typography variant="subtitle2">Email Address</Typography>
-                <Typography variant="body2">{currentUser?.email}</Typography>
-              </Box>
-              <Box>
-                <Typography variant="subtitle2">Phone Number</Typography>
-                <Typography variant="body2">{currentUser?.phone}</Typography>
-              </Box>
-              <Box>
-                <Typography variant="subtitle2">Country</Typography>
-                <Typography variant="body2">{currentUser?.country}</Typography>
-              </Box>
-              <Box>
-                <Typography variant="subtitle2">City</Typography>
-                <Typography variant="body2">{currentUser?.city}</Typography>
-              </Box>
-            </Box>
-          </Card>
-          <Box>
-            <Typography variant="h6" mt={3}>
-              Booking History
+
+        {/* Right: Task Preview */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ p: 3, boxShadow: 3, bgcolor: 'grey.50' }}>
+            <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+              Task Preview
             </Typography>
-          </Box>
-          <UserBookingTable id={id} />
+
+            <Stack spacing={1.5}>
+              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', boxShadow: 1 }}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Room
+                </Typography>
+                <Typography variant="body1" fontWeight="bold">
+                  {formData.room || '-'}
+                </Typography>
+              </Box>
+
+              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', boxShadow: 1 }}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Category
+                </Typography>
+                <Typography>{formData.category || '-'}</Typography>
+              </Box>
+
+              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', boxShadow: 1 }}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Description
+                </Typography>
+                <Typography>{formData.description || '-'}</Typography>
+              </Box>
+
+              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', boxShadow: 1 }}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Due Date
+                </Typography>
+                <Typography>
+                  {formData.dueDate ? new Date(formData.dueDate).toLocaleString() : '-'}
+                </Typography>
+              </Box>
+
+              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', boxShadow: 1 }}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Priority
+                </Typography>
+                <Typography>{formData.priority || '-'}</Typography>
+              </Box>
+
+              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', boxShadow: 1 }}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Status
+                </Typography>
+                <Typography sx={{ textTransform: 'capitalize' }}>
+                  {formData.status || '-'}
+                </Typography>
+              </Box>
+
+              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', boxShadow: 1 }}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Assigned To
+                </Typography>
+                <Typography>{formData.assignedTo || '-'}</Typography>
+              </Box>
+            </Stack>
+          </Card>
         </Grid>
       </Grid>
-
-      {/* Confirmation Dialog */}
-      <Dialog
-        open={openConfirmDialog}
-        onClose={() => setOpenConfirmDialog(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">Confirm Deletion</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete {currentUser?.firstName} {currentUser?.lastName}? This
-            action cannot be undone.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenConfirmDialog(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleDeleteUser} color="error" autoFocus>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Container>
   );
 }

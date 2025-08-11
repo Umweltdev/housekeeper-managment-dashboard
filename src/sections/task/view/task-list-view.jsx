@@ -5,6 +5,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { Box } from '@mui/system';
 import { useTheme } from '@mui/material/styles';
 
+import Iconify from 'src/components/iconify';
+
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import MenuItem from '@mui/material/MenuItem';
@@ -192,17 +195,35 @@ export default function UserListView() {
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <CustomBreadcrumbs
-          heading="Room Cleaning Assignments"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            // { name: 'Check-In', href: paths.dashboard.booking.root },
-            { name: 'Room Cleaning' },
-          ]}
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{}}>
+          <CustomBreadcrumbs
+            heading="Room Cleaning Assignments"
+            links={[
+              { name: 'Dashboard', href: paths.dashboard.root },
+              // { name: 'Check-In', href: paths.dashboard.booking.root },
+              { name: 'Room Cleaning' },
+            ]}
+            sx={{
+              mb: { xs: 3, md: 5 },
+            }}
+          />
+          {/* <Divider /> */}
+          {/* <Card
           sx={{
             mb: { xs: 3, md: 5 },
           }}
-        />
+        > */}
+
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Iconify icon="material-symbols:add-box" />}
+            onClick={() => router.push('/dashboard/task/create')}
+          >
+            Create Task
+          </Button>
+        </Stack>
+
         {/* <Divider /> */}
 
         <Box
