@@ -50,7 +50,9 @@ import InvoiceTableFiltersResult from './invoice-table-filters-result';
 const TABLE_HEAD = [
   { id: 'itemName', label: 'Item Name' },
   { id: 'requestDate', label: 'Request Date' },
+  // {id: 'parLevel', label: 'Par Level'},
   { id: 'quantity', label: 'Quantity' },
+  {id: 'parLevel', label: 'Par Level'},
   { id: 'status', label: 'Status' },
   { id: '', label: 'Action' },
 ];
@@ -139,18 +141,18 @@ export default function InvoiceListViewEdit() {
       color: 'warning',
       count: getInvoiceLength('Requested'),
     },
-    {
-      value: 'Rejected',
-      label: 'Rejected',
-      color: 'error',
-      count: getInvoiceLength('Rejected'),
-    },
-    {
-      value: 'Received',
-      label: 'Received',
-      color: 'info',
-      count: getInvoiceLength('Received'),
-    },
+    // {
+    //   value: 'Rejected',
+    //   label: 'Rejected',
+    //   color: 'error',
+    //   count: getInvoiceLength('Rejected'),
+    // },
+    // {
+    //   value: 'Received',
+    //   label: 'Received',
+    //   color: 'info',
+    //   count: getInvoiceLength('Received'),
+    // },
   ];
 
   const handleFilters = useCallback(

@@ -45,7 +45,7 @@ export default function App() {
   useScrollToTop();
 
   return (
-    <AuthProvider>
+    // <AuthProvider>
       <LocalizationProvider>
         <SettingsProvider
           defaultSettings={{
@@ -71,7 +71,7 @@ export default function App() {
           </ThemeProvider>
         </SettingsProvider>
       </LocalizationProvider>
-    </AuthProvider>
+    // </AuthProvider>
   );
 }
 

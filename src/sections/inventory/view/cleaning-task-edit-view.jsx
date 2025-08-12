@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
@@ -86,7 +87,7 @@ export default function CleaningTaskEditForm({ task }) {
       setOpenSnackbar(true);
 
       setTimeout(() => {
-        router('/dashboard/task');
+        router('/dashboard/inventory');
       }, 1500);
     }, 1500);
   };
@@ -99,7 +100,7 @@ export default function CleaningTaskEditForm({ task }) {
           <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
             <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
               <Typography variant="h6" component="h2">
-                Room #{task.room}
+                Inventory #{task.itemName}
               </Typography>
 
               <Label
@@ -110,20 +111,20 @@ export default function CleaningTaskEditForm({ task }) {
                 {task.status}
               </Label>
 
-              <Label
+              {/* <Label
                 variant="soft"
                 color={PRIORITY_COLORS[task.priority] || 'default'}
                 sx={{ textTransform: 'capitalize' }}
               >
                 {task.priority} Priority
-              </Label>
+              </Label> */}
             </Stack>
 
             <Divider sx={{ mb: 2 }} />
 
             <Stack spacing={2}>
               <TextField
-                label="Room Category"
+                label="Inventory Name"
                 value={task.category}
                 fullWidth
                 InputProps={{ readOnly: true }}
@@ -136,23 +137,24 @@ export default function CleaningTaskEditForm({ task }) {
                 fullWidth
                 InputProps={{ readOnly: true }}
               />
-              <TextField
+              {/* <TextField
                 label="Due Date"
-                value={new Date(task.dueDate).toISOString().split('T')[0]}
+                // eslint-disable-next-line react/prop-types
+                value={new Date(task.requestedDate).toISOString().split('T')[0]}
                 type="date"
                 fullWidth
                 InputProps={{ readOnly: true }}
-              />
+              /> */}
 
               <Stack direction="row" alignItems="center" spacing={1}>
                 <TextField
-                  label="Priority"
-                  value={task.priority}
+                  label="Quantity"
+                  value={task.quantity}
                   fullWidth
                   InputProps={{ readOnly: true }}
                 />
                 <Chip
-                  label={task.priority}
+                  label={task.quantity}
                   color={PRIORITY_COLORS[task.priority]}
                   size="small"
                   variant="soft"
@@ -189,7 +191,7 @@ export default function CleaningTaskEditForm({ task }) {
         </Grid>
 
         {/* Issues Section */}
-        <Grid item xs={12} md={6} sx={{ maxHeight: 550 }}>
+        {/* <Grid item xs={12} md={6} sx={{ maxHeight: 550 }}>
           <Card
             elevation={3}
             sx={{ borderRadius: 2, height: '100%', display: 'flex', flexDirection: 'column' }}
@@ -315,11 +317,11 @@ export default function CleaningTaskEditForm({ task }) {
               </Box>
             </CardContent>
           </Card>
-        </Grid>
+        </Grid> */}
       </Grid>
 
       {/* Footer */}
-      <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+      <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-start', gap: 2 }}>
         <Button
           variant="outlined"
           color="inherit"

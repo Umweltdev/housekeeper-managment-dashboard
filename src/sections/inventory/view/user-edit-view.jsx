@@ -8,7 +8,6 @@ import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { useGetUser } from 'src/api/user';
-import { useGetBooking } from 'src/api/booking';
 import { CLEANING_TASKS } from './cleaning-tasks';
 
 import CleaningTaskEditForm from './cleaning-task-edit-view';
@@ -18,11 +17,10 @@ import CleaningTaskEditForm from './cleaning-task-edit-view';
 
 export default function TaskEditView({ id }) {
   const settings = useSettingsContext();
-  const { booking } = useGetBooking(id);
   const { user } = useGetUser(id);
 
   const task = CLEANING_TASKS.find((t) => t.id.toString() === id);
-  console.log(booking);
+  console.log(task);
 
   // const getUserDetails = async (userId) => {
   //   try {
@@ -41,17 +39,17 @@ export default function TaskEditView({ id }) {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Task Update"
+        heading="Inventory Update"
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'Task List',
+            name: 'Inventory List',
             href: paths.dashboard.task.root,
           },
-          { name: 'Task Update' },
+          { name: 'Inventory Update' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

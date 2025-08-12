@@ -14,7 +14,7 @@ export default function UserEditPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Task Update</title>
+        <title> Dashboard: Inventory Update</title>
       </Helmet>
 
       <UserEditView id={`${id}`} />

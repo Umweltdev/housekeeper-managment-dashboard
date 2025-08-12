@@ -40,6 +40,7 @@ const UserEditPage = lazy(() => import('src/pages/dashboard/task/edit'));
 
 const InventoryListPage = lazy(() => import('src/pages/dashboard/inventory/list'));
 const InventoryDetailsPage = lazy(() => import('src/pages/dashboard/inventory/details'));
+const InventoryEditPage = lazy(() => import('src/pages/dashboard/inventory/edit'));
 
 const TrainingListPage = lazy(() => import('src/pages/dashboard/training/list'));
 
@@ -114,7 +115,7 @@ export const dashboardRoutes = [
           { path: 'list', element: <UserListPage /> },
 
           { path: ':id', element: <InventoryDetailsPage /> },
-          { path: ':id/edit', element: <InventoryDetailsPage /> },
+          { path: ':id/edit', element: <InventoryEditPage /> },
           // { path: 'account', element: <UserAccountPage /> },
         ],
       },

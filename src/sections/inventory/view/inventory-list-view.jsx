@@ -84,7 +84,7 @@ export default function InventoryListView() {
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const { bookings, refreshBookings } = useGetBookings();
+  const { bookings, refreshBookings } = useGetBookings([]);
   const [tableData, setTableData] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState('all');
   const [selectedTimeframe, setSelectedTimeframe] = useState('month');
@@ -218,31 +218,33 @@ export default function InventoryListView() {
   };
 
   // Process bookings data
-  bookings.forEach((booking) => {
-    booking.rooms.forEach((room) => {
-      const lengthOfStay = calculateDaysDifference(room.checkOut, room.checkIn);
-      lengthOfStayData.push(lengthOfStay);
+  // Remove if statement here
+  //   bookings.forEach((booking) => {
+  //   booking.rooms.forEach((room) => {
+  //     const lengthOfStay = calculateDaysDifference(room.checkOut, room.checkIn);
+  //     lengthOfStayData.push(lengthOfStay);
 
-      const leadTime = calculateDaysDifference(room.checkIn, booking.createdAt);
-      leadTimeData.push(leadTime);
+  //     const leadTime = calculateDaysDifference(room.checkIn, booking.createdAt);
+  //     leadTimeData.push(leadTime);
 
-      const checkInDate = new Date(room.checkIn);
-      const monthKey = `${checkInDate.getFullYear()}-${checkInDate.getMonth() + 1}`;
-      const weekKey = `${checkInDate.getFullYear()}-W${getWeekNumber(checkInDate)}`;
-      const dayKey = `${checkInDate.getFullYear()}-${
-        checkInDate.getMonth() + 1
-      }-${checkInDate.getDate()}`;
+  //     const checkInDate = new Date(room.checkIn);
+  //     const monthKey = `${checkInDate.getFullYear()}-${checkInDate.getMonth() + 1}`;
+  //     const weekKey = `${checkInDate.getFullYear()}-W${getWeekNumber(checkInDate)}`;
+  //     const dayKey = `${checkInDate.getFullYear()}-${
+  //       checkInDate.getMonth() + 1
+  //     }-${checkInDate.getDate()}`;
 
-      monthlyGuests[monthKey] = (monthlyGuests[monthKey] || 0) + 1;
-      weeklyGuests[weekKey] = (weeklyGuests[weekKey] || 0) + 1;
-      dailyGuests[dayKey] = (dailyGuests[dayKey] || 0) + 1;
-    });
-  });
+  //     monthlyGuests[monthKey] = (monthlyGuests[monthKey] || 0) + 1;
+  //     weeklyGuests[weekKey] = (weeklyGuests[weekKey] || 0) + 1;
+  //     dailyGuests[dayKey] = (dailyGuests[dayKey] || 0) + 1;
+  //   });
+  // });
 
   // Extract check-in dates
   const checkInDates = bookings
-    .filter((booking) => booking.status === 'checkedIn')
-    .flatMap((booking) => booking.rooms.map((room) => new Date(room.checkIn || booking.createdAt)));
+  // remove comments
+    // .filter((booking) => booking.status === 'checkedIn')
+    // .flatMap((booking) => booking.rooms.map((room) => new Date(room.checkIn || booking.createdAt)));
 
   // Calculate monthly averages
   const calculateMonthlyAverage = () => {
@@ -313,8 +315,8 @@ export default function InventoryListView() {
           gap={2}
         >
           <InvoiceAnalytic
-            title="Requested"
-            total={10}
+            title="Total Items"
+            total={200}
             percent={5}
             price={0}
             icon="tdesign:task"
@@ -322,8 +324,8 @@ export default function InventoryListView() {
           />
 
           <InvoiceAnalytic
-            title="Approved"
-            total={50}
+            title="In Stock"
+            total={150}
             percent={50}
             price={0}
             icon="ic:round-check-circle"
@@ -331,8 +333,8 @@ export default function InventoryListView() {
           />
 
           <InvoiceAnalytic
-            title="Rejected"
-            total={5}
+            title="Low Stock"
+            total={40}
             percent={15}
             price={0}
             icon="material-symbols:cancel"
@@ -340,8 +342,8 @@ export default function InventoryListView() {
           />
 
           <InvoiceAnalytic
-            title="Received"
-            total={6}
+            title="Out of Stock"
+            total={10}
             percent={10}
             price={0}
             icon="ph:package-bold"
@@ -379,6 +381,10 @@ export default function InventoryListView() {
 }
 
 function applyFilter({ inputData, comparator, filters }) {
+  // remove the if statement
+  if(!inputData.lenght){
+    return []
+  }
   const { name, status } = filters;
 
   let filteredData = inputData.map((el, index) => [el, index]);

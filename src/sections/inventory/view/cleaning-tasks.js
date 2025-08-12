@@ -5,14 +5,16 @@ export const CLEANING_TASKS = [
     id: '1',
     itemName: 'Bath Towels',
     requestDate: '2024-12-22',
-    quantity: 50,
+    quantity: 40,
+    parLevel: 15,
     status: 'Approved',
   },
   {
     id: '2',
     itemName: 'Shampoo Bottles',
     requestDate: '2024-12-21',
-    quantity: 200,
+    quantity: 0,
+    parLevel: 15,
     status: 'Requested',
   },
   {
@@ -20,6 +22,7 @@ export const CLEANING_TASKS = [
     itemName: 'Light Bulbs',
     requestDate: '2024-12-20',
     quantity: 30,
+    parLevel: 40,
     status: 'Rejected',
   },
   {
@@ -27,13 +30,15 @@ export const CLEANING_TASKS = [
     itemName: 'Coffee Pods',
     requestDate: '2024-12-19',
     quantity: 150,
+    parLevel: 15,
     status: 'Received',
   },
   {
     id: '5',
     itemName: 'Toilet Paper Rolls',
     requestDate: '2024-12-18',
-    quantity: 100,
+    quantity: 0,
+    parLevel: 15,
     status: 'Requested',
   },
   {
@@ -41,6 +46,7 @@ export const CLEANING_TASKS = [
     itemName: 'Room Slippers',
     requestDate: '2024-12-17',
     quantity: 75,
+    parLevel: 15,
     status: 'Approved',
   },
   {
@@ -48,6 +54,7 @@ export const CLEANING_TASKS = [
     itemName: 'Water Bottles',
     requestDate: '2024-12-16',
     quantity: 300,
+    parLevel: 40,
     status: 'Received',
   },
   {
@@ -55,6 +62,7 @@ export const CLEANING_TASKS = [
     itemName: 'Laundry Bags',
     requestDate: '2024-12-15',
     quantity: 40,
+    parLevel: 15,
     status: 'Rejected',
   },
   {
@@ -62,13 +70,15 @@ export const CLEANING_TASKS = [
     itemName: 'Cleaning Sprays',
     requestDate: '2024-12-14',
     quantity: 80,
+    parLevel: 15,
     status: 'Approved',
   },
   {
     id: '10',
     itemName: 'Paper Towels',
     requestDate: '2024-12-13',
-    quantity: 120,
+    quantity: 0,
+    parLevel: 15,
     status: 'Requested',
   },
   {
@@ -76,6 +86,7 @@ export const CLEANING_TASKS = [
     itemName: 'Trash Bags',
     requestDate: '2024-12-12',
     quantity: 200,
+    parLevel: 15,
     status: 'Received',
   },
   {
@@ -83,6 +94,7 @@ export const CLEANING_TASKS = [
     itemName: 'Hand Soap Dispensers',
     requestDate: '2024-12-11',
     quantity: 25,
+    parLevel: 15,
     status: 'Rejected',
   },
   {
@@ -90,13 +102,15 @@ export const CLEANING_TASKS = [
     itemName: 'Mop Heads',
     requestDate: '2024-12-10',
     quantity: 15,
+    parLevel: 15,
     status: 'Approved',
   },
   {
     id: '14',
     itemName: 'Dish Soap',
     requestDate: '2024-12-09',
-    quantity: 60,
+    quantity: 0,
+    parLevel: 15,
     status: 'Requested',
   },
   {
@@ -104,6 +118,7 @@ export const CLEANING_TASKS = [
     itemName: 'Vacuum Filters',
     requestDate: '2024-12-08',
     quantity: 10,
+    parLevel: 15,
     status: 'Received',
   },
   {
@@ -111,6 +126,7 @@ export const CLEANING_TASKS = [
     itemName: 'Gloves (Cleaning)',
     requestDate: '2024-12-07',
     quantity: 100,
+    parLevel: 15,
     status: 'Approved',
   },
 ];
