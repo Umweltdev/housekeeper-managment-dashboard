@@ -8,6 +8,7 @@ export const CLEANING_TASKS = [
     quantity: 40,
     parLevel: 15,
     status: 'Approved',
+    requestedBy: 'John'
   },
   {
     id: '2',
@@ -16,6 +17,7 @@ export const CLEANING_TASKS = [
     quantity: 0,
     parLevel: 15,
     status: 'Requested',
+    requestedBy: 'Sam'
   },
   {
     id: '3',
@@ -24,6 +26,7 @@ export const CLEANING_TASKS = [
     quantity: 30,
     parLevel: 40,
     status: 'Rejected',
+    requestedBy: 'John'
   },
   {
     id: '4',
@@ -32,6 +35,7 @@ export const CLEANING_TASKS = [
     quantity: 150,
     parLevel: 15,
     status: 'Received',
+    requestedBy: 'John'
   },
   {
     id: '5',
@@ -40,6 +44,7 @@ export const CLEANING_TASKS = [
     quantity: 0,
     parLevel: 15,
     status: 'Requested',
+    requestedBy: 'Zoe'
   },
   {
     id: '6',
@@ -48,6 +53,7 @@ export const CLEANING_TASKS = [
     quantity: 75,
     parLevel: 15,
     status: 'Approved',
+    requestedBy: 'Zoe'
   },
   {
     id: '7',
@@ -56,6 +62,7 @@ export const CLEANING_TASKS = [
     quantity: 300,
     parLevel: 40,
     status: 'Received',
+    requestedBy: 'John'
   },
   {
     id: '8',
@@ -64,6 +71,7 @@ export const CLEANING_TASKS = [
     quantity: 40,
     parLevel: 15,
     status: 'Rejected',
+    requestedBy: 'Zoe'
   },
   {
     id: '9',
@@ -72,6 +80,7 @@ export const CLEANING_TASKS = [
     quantity: 80,
     parLevel: 15,
     status: 'Approved',
+    requestedBy: 'Daniella'
   },
   {
     id: '10',
@@ -80,6 +89,7 @@ export const CLEANING_TASKS = [
     quantity: 0,
     parLevel: 15,
     status: 'Requested',
+    requestedBy: 'Daniella'
   },
   {
     id: '11',
@@ -88,6 +98,7 @@ export const CLEANING_TASKS = [
     quantity: 200,
     parLevel: 15,
     status: 'Received',
+    requestedBy: 'Smith'
   },
   {
     id: '12',
@@ -96,6 +107,7 @@ export const CLEANING_TASKS = [
     quantity: 25,
     parLevel: 15,
     status: 'Rejected',
+    requestedBy: 'Daniella'
   },
   {
     id: '13',
@@ -104,6 +116,7 @@ export const CLEANING_TASKS = [
     quantity: 15,
     parLevel: 15,
     status: 'Approved',
+    requestedBy: 'Daniella'
   },
   {
     id: '14',
@@ -112,6 +125,7 @@ export const CLEANING_TASKS = [
     quantity: 0,
     parLevel: 15,
     status: 'Requested',
+    requestedBy: 'Zoe'
   },
   {
     id: '15',
@@ -120,6 +134,7 @@ export const CLEANING_TASKS = [
     quantity: 10,
     parLevel: 15,
     status: 'Received',
+    requestedBy: 'Doe'
   },
   {
     id: '16',
@@ -128,5 +143,6 @@ export const CLEANING_TASKS = [
     quantity: 100,
     parLevel: 15,
     status: 'Approved',
+    requestedBy: 'Doe'
   },
 ];

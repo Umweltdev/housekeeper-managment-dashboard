@@ -41,7 +41,7 @@ import {
 
 import { CLEANING_TASKS } from './cleaning-tasks';
 import InvoiceTableToolbar from './invoice-table-toolbar';
-import CleaningTaskTableRow from './cleaning-task-edit-row';
+import RequestInventoryTableRow from './request-inventory-edit-row';
 import InvoiceTableFiltersResult from './invoice-table-filters-result';
 
 // ----------------------------------------------------------------------
@@ -51,9 +51,11 @@ const TABLE_HEAD = [
   { id: 'itemName', label: 'Item Name' },
   { id: 'requestDate', label: 'Request Date' },
   { id: 'quantity', label: 'Quantity' },
-  {id: 'parLevel', label: 'Par Level'},
+  {id: 'parLevel', label: 'Quantity Requested'},
+  {id: 'requestedBy', label: 'RequestedBy'},
   { id: 'status', label: 'Status' },
   { id: '', label: 'Action' },
+  {id: 'reject', label: ''}
 ];
 
 const defaultFilters = {
@@ -330,7 +332,7 @@ export default function InvoiceListViewEdit() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
-                    <CleaningTaskTableRow
+                    <RequestInventoryTableRow
                       key={row.id}
                       row={row}
                       selected={table.selected.includes(row.id)}

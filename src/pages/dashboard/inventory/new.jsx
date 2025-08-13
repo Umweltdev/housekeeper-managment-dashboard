@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-import { UserCreateView } from 'src/sections/task/view';
+import { UserCreateView } from 'src/sections/inventory/view';
 
 // ----------------------------------------------------------------------
 

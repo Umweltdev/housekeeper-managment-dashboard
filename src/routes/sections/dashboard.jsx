@@ -28,6 +28,7 @@ const InvoiceListPage = lazy(() => import('src/pages/dashboard/invoice/list'));
 const InvoiceDetailsPage = lazy(() => import('src/pages/dashboard/invoice/details'));
 const InvoiceCreatePage = lazy(() => import('src/pages/dashboard/invoice/new'));
 const InvoiceEditPage = lazy(() => import('src/pages/dashboard/invoice/edit'));
+
 // USER
 // const UserProfilePage = lazy(() => import('src/pages/dashboard/user/profile'));
 // const UserCardsPage = lazy(() => import('src/pages/dashboard/user/cards'));
@@ -41,6 +42,7 @@ const UserEditPage = lazy(() => import('src/pages/dashboard/task/edit'));
 const InventoryListPage = lazy(() => import('src/pages/dashboard/inventory/list'));
 const InventoryDetailsPage = lazy(() => import('src/pages/dashboard/inventory/details'));
 const InventoryEditPage = lazy(() => import('src/pages/dashboard/inventory/edit'));
+const InventoryRequestPage = lazy(() => import('src/pages/dashboard/inventory/request'));
 
 const TrainingListPage = lazy(() => import('src/pages/dashboard/training/list'));
 
@@ -116,7 +118,7 @@ export const dashboardRoutes = [
 
           { path: ':id', element: <InventoryDetailsPage /> },
           { path: ':id/edit', element: <InventoryEditPage /> },
-          // { path: 'account', element: <UserAccountPage /> },
+          { path: 'request', element: <InventoryRequestPage /> },
         ],
       },
       {

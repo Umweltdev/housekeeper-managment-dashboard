@@ -132,7 +132,7 @@ export function useNavData() {
             icon: ICONS.ecommerce,
           },
           {
-            title: t('Inventory Request'),
+            title: t('Inventory Requests'),
             path: paths.dashboard.inventory.request,
             icon: ICONS.request,
           },

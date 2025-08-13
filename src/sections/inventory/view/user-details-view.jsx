@@ -274,7 +274,7 @@ export default function UserDetailsView({ id }) {
                       p: 1.5,
                       border: '1px solid #eee',
                       borderRadius: 1.5,
-                      bgcolor: 'grey.50',
+                      // bgcolor: 'grey.50',
                     }}
                   >
                     <Box>

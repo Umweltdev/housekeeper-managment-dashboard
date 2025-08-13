@@ -5,15 +5,20 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTheme } from '@mui/material/styles';
 
 import Iconify from 'src/components/iconify';
-
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
+import {
+  Box,
+  Stack,
+  Alert,
+  Button,
+  Divider,
+  MenuItem,
+  Snackbar,
+  CircularProgress,
+} from '@mui/material';
 import Container from '@mui/material/Container';
-import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import Divider from '@mui/material/Divider';
 
 import axiosInstance from 'src/utils/axios';
 import { paths } from 'src/routes/paths';
@@ -31,17 +36,9 @@ import { useGetBookings } from 'src/api/booking';
 
 import InvoiceListViewEdit from './invoice-list-viewEdit';
 import InvoiceAnalytic from '../invoice-analytic';
+import RequestInventoryListView from './request-inventory-list-view';
 
 // ----------------------------------------------------------------------
-
-const TABLE_HEAD = [
-  { id: 'customerName', label: 'Customer Name' },
-  { id: 'status', label: 'Price (₦)', width: 170 },
-  { id: 'orderNumber', label: 'Booking ID', width: 200 },
-  { id: 'roomType', label: 'Room Type', width: 200 },
-  { id: 'roomNumber', label: 'Room Number', width: 150 },
-  { id: '', width: 100 },
-];
 
 const defaultFilters = {
   name: '',
@@ -78,7 +75,8 @@ MonthSelector.propTypes = {
 
 // ----------------------------------------------------------------------
 
-export default function InventoryListView() {
+// eslint-disable-next-line react/prop-types
+export default function CleaningTaskEditForm({ task }) {
   const { enqueueSnackbar } = useSnackbar();
   const table = useTable();
   const settings = useSettingsContext();
@@ -87,9 +85,11 @@ export default function InventoryListView() {
   const { bookings, refreshBookings } = useGetBookings([]);
   const [tableData, setTableData] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState('all');
-  const [selectedTimeframe, setSelectedTimeframe] = useState('month');
+  // const [selectedTimeframe, setSelectedTimeframe] = useState('month');
   const theme = useTheme();
   const [filters, setFilters] = useState(defaultFilters);
+  const [isSaving, setIsSaving] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   useEffect(() => {
     setTableData(bookings);
@@ -110,21 +110,6 @@ export default function InventoryListView() {
   const canReset = !isEqual(defaultFilters, filters);
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  const handleFilters = useCallback(
-    (name, value) => {
-      table.onResetPage();
-      setFilters((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    },
-    [table]
-  );
-
-  const handleResetFilters = useCallback(() => {
-    setFilters(defaultFilters);
-  }, []);
-
   const handleDeleteRow = useCallback(
     async (id) => {
       try {
@@ -139,20 +124,6 @@ export default function InventoryListView() {
     [refreshBookings, enqueueSnackbar]
   );
 
-  const handleEditRow = useCallback(
-    (id) => {
-      router.push(paths.dashboard.user.edit(id));
-    },
-    [router]
-  );
-
-  const handleViewRow = useCallback(
-    (id) => {
-      router.push(paths.dashboard.booking.details(id));
-    },
-    [router]
-  );
-
   const handleDeleteRows = useCallback(() => {
     const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
     enqueueSnackbar('Delete success!');
@@ -162,83 +133,6 @@ export default function InventoryListView() {
       totalRowsFiltered: dataFiltered.length,
     });
   }, [dataFiltered.length, dataInPage.length, enqueueSnackbar, table, tableData]);
-
-  const calculateDaysDifference = (date1, date2) => {
-    const timeDifference = new Date(date1) - new Date(date2);
-    return Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-  };
-
-  const getWeekNumber = (date) => {
-    const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
-    d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-    const yearStart = new Date(d.getFullYear(), 0, 1);
-    return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
-  };
-
-  // Initialize data structures
-  const monthlyGuests = {};
-  const weeklyGuests = {};
-  const dailyGuests = {};
-  const leadTimeData = [];
-  const lengthOfStayData = [];
-
-  const calculateAverageCheckinTime = () => {
-    if (checkInDates.length === 0) return 'No data';
-
-    // Filter by selected month if needed
-    const filteredDates =
-      selectedMonth === 'all'
-        ? checkInDates
-        : checkInDates.filter((date) => date.getMonth() + 1 === Number(selectedMonth));
-
-    if (filteredDates.length === 0) return 'No data';
-
-    // Calculate average hour
-    const totalHours = filteredDates.reduce((sum, date) => sum + date.getHours(), 0);
-    const avgHour = Math.round(totalHours / filteredDates.length);
-
-    // Format as time (e.g., "2:30 PM")
-    const avgDate = new Date();
-    avgDate.setHours(avgHour, 0, 0, 0);
-    return avgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
-
-  const calculateHourlyCheckinDistribution = () => {
-    const hourlyCounts = Array(24).fill(0);
-
-    checkInDates.forEach((date) => {
-      const hour = date.getHours();
-      hourlyCounts[hour]++;
-    });
-
-    // Normalize to percentage for chart
-    const maxCount = Math.max(...hourlyCounts);
-    return hourlyCounts.map((count) => (maxCount ? Math.round((count / maxCount) * 100) : 0));
-  };
-
-  // Process bookings data
-  // Remove if statement here
-  //   bookings.forEach((booking) => {
-  //   booking.rooms.forEach((room) => {
-  //     const lengthOfStay = calculateDaysDifference(room.checkOut, room.checkIn);
-  //     lengthOfStayData.push(lengthOfStay);
-
-  //     const leadTime = calculateDaysDifference(room.checkIn, booking.createdAt);
-  //     leadTimeData.push(leadTime);
-
-  //     const checkInDate = new Date(room.checkIn);
-  //     const monthKey = `${checkInDate.getFullYear()}-${checkInDate.getMonth() + 1}`;
-  //     const weekKey = `${checkInDate.getFullYear()}-W${getWeekNumber(checkInDate)}`;
-  //     const dayKey = `${checkInDate.getFullYear()}-${
-  //       checkInDate.getMonth() + 1
-  //     }-${checkInDate.getDate()}`;
-
-  //     monthlyGuests[monthKey] = (monthlyGuests[monthKey] || 0) + 1;
-  //     weeklyGuests[weekKey] = (weeklyGuests[weekKey] || 0) + 1;
-  //     dailyGuests[dayKey] = (dailyGuests[dayKey] || 0) + 1;
-  //   });
-  // });
 
   // Extract check-in dates
   const checkInDates = bookings
@@ -268,10 +162,17 @@ export default function InventoryListView() {
   const averageCheckInsPerHour =
     checkInDates.length > 0 ? (averageCheckInsPerDay / 24).toFixed(2) : 0;
 
-  const guestChartData = {
-    month: Object.values(monthlyGuests),
-    week: Object.values(weeklyGuests),
-    day: Object.values(dailyGuests),
+  const handleSaveChanges = () => {
+    setIsSaving(true);
+
+    setTimeout(() => {
+      setIsSaving(false);
+      setOpenSnackbar(true);
+
+      setTimeout(() => {
+        router('/dashboard/inventory');
+      }, 1500);
+    }, 1500);
   };
 
   return (
@@ -289,21 +190,7 @@ export default function InventoryListView() {
               mb: { xs: 3, md: 5 },
             }}
           />
-          {/* <Divider /> */}
-          {/* <Card
-          sx={{
-            mb: { xs: 3, md: 5 },
-          }}
-        > */}
 
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Iconify icon="material-symbols:add-box" />}
-            onClick={() => router.push('/dashboard/inventory/new')}
-          >
-            New Inventory
-          </Button>
         </Stack>
         <Stack
           direction={{ xs: 'column', md: 'row' }}
@@ -351,8 +238,49 @@ export default function InventoryListView() {
           />
         </Stack>
         {/* </Card> */}
-        <InvoiceListViewEdit />
+        {/* <InvoiceListViewEdit /> */}
+        <RequestInventoryListView/>
       </Container>
+      {/* Footer */}
+      {/* <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-start', gap: 2 }}>
+        <Button
+          variant="outlined"
+          color="inherit"
+          startIcon={<Iconify icon="eva:close-fill" />}
+          onClick={() => router('/dashboard/inventory')}
+          disabled={isSaving}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSaveChanges}
+          startIcon={
+            isSaving ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              <Iconify icon="eva:save-fill" />
+            )
+          }
+          disabled={isSaving}
+          sx={{ minWidth: 140 }}
+        >
+          {isSaving ? 'Saving...' : 'Save Changes'}
+        </Button>
+      </Box> */}
+
+      {/* Snackbar */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={1500}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
+          Changes saved successfully!
+        </Alert>
+      </Snackbar>
 
       <ConfirmDialog
         open={confirm.value}
@@ -410,6 +338,7 @@ function applyFilter({ inputData, comparator, filters }) {
   return filteredData;
 }
 
-InventoryListView.propTypes = {
-  // Add any props your component receives here
-};
+// InventoryListView.propTypes = {
+//   // Add any props your component receives here
+// };
+  
