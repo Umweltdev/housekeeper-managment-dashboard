@@ -50,53 +50,35 @@ export default function RequestInventoryTableRow({
           <Label
             variant="soft"
             color={
-              (quantity > parLevel && 'success') ||
-              ((quantity <= parLevel && quantity > 0 ) && 'warning') ||
-              (quantity <= 0 && 'error') ||
+              (status === 'Approved' && 'success') ||
+              (status === 'Requested' && 'warning') ||
+              (status === 'Rejected' && 'error') ||
+              (status === 'Received' && 'info') ||
               'default'
             }
           >
-            {
-              (quantity > parLevel && 'In Stock') ||
-              ((quantity <= parLevel && quantity > 0 ) && 'Low Stock') ||
-              (quantity <= 0 && 'Out of Stock') ||
-              'No Stock'
-            }
+            {status === 'Requested' ? 'Pending' : status}
           </Label>
         </TableCell>
 
         <TableCell align="left" sx={{ px: 1 }} className='flex'>
-          <div className='flex gap-4'>
+          <div className='flex'>
             <Button variant="contained"
-                color="success" className='ml-4'>
-                {/* <MenuItem
-                  onClick={() => {
-                    onEditRow();
-                    popover.onClose();
-                  }}
-                > */}
-                  {/* <Iconify icon="solar:pen-bold" /> */}
-                  Approve
-                {/* </MenuItem> */}
-              </Button>
-              {/* <MenuItem
-              onClick={() => {
-                confirm.onTrue();
-                popover.onClose();
-              }}
-              disabled={status !== 'Requested'}
-              className='bg-red-300'
-            > */}
-              {/* <Iconify icon="fluent:delete-28-regular" /> */}
-              {/* Reject
-            </MenuItem> */}
+              disabled={status === 'Approved' || status === 'Received'}
+              color="success" className=''>
+                <Iconify icon="material-symbols:bookmark-check" />
+                Approve
+            </Button>
           </div>
         </TableCell>
-        <TableCell>
+        <TableCell sx={{ px: 1 }}>
           <Button variant="contained"
-                color="error">
-                  Reject
-              </Button>
+            disabled={status === 'Rejected' || status === 'Received'}
+            className='flex items-center gap-4'
+            color="error">
+              <Iconify icon="material-symbols:cancel-presentation" />
+              Reject
+          </Button>
         </TableCell>
       </TableRow>
 

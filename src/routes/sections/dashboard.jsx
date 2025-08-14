@@ -43,6 +43,7 @@ const InventoryListPage = lazy(() => import('src/pages/dashboard/inventory/list'
 const InventoryDetailsPage = lazy(() => import('src/pages/dashboard/inventory/details'));
 const InventoryEditPage = lazy(() => import('src/pages/dashboard/inventory/edit'));
 const InventoryRequestPage = lazy(() => import('src/pages/dashboard/inventory/request'));
+const InventoryRequestAssignPage = lazy(() => import('src/pages/dashboard/inventory/assign'));
 
 const TrainingListPage = lazy(() => import('src/pages/dashboard/training/list'));
 
@@ -115,10 +116,10 @@ export const dashboardRoutes = [
           // { path: 'profile', element: <UserProfilePage /> },
           // { path: 'cards', element: <UserCardsPage /> },
           { path: 'list', element: <UserListPage /> },
-
           { path: ':id', element: <InventoryDetailsPage /> },
           { path: ':id/edit', element: <InventoryEditPage /> },
           { path: 'request', element: <InventoryRequestPage /> },
+          { path: 'request/assign', element: <InventoryRequestAssignPage /> },
         ],
       },
       {

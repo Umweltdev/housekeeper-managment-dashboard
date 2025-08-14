@@ -120,10 +120,7 @@ export default function InvoiceListViewEdit() {
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  // const getInvoiceLength = () => tableData.length;
-  const getOutLength = () => tableData.filter((item) => item.quantity <= 0).length;
-  const getLowLength = () => tableData.filter((item) => (item.quantity <= item.parLevel) && (item.quantity > 0)).length;
-  const getInStockLength = () => tableData.filter((item) => item.quantity > item.parLevel).length;
+  const getInvoiceLength = (status) => tableData.filter((item) => item.status === status).length;
 
   const getTotalAmount = (status) =>
     sumBy(
@@ -134,29 +131,29 @@ export default function InvoiceListViewEdit() {
   const TABS = [
     { value: 'all', label: 'All Items', color: 'default', count: tableData.length },
     {
-      value: 'In Stock',
-      label: 'In Stock',
+      value: 'Approved',
+      label: 'Approved',
       color: 'success',
-      count: getInStockLength(),
+      count: getInvoiceLength('Approved'),
     },
     {
-      value: 'Low Stock',
-      label: 'Low Stock',
+      value: 'Requested',
+      label: 'Pending',
       color: 'warning',
-      count: getLowLength(),
+      count: getInvoiceLength('Requested'),
     },
     {
-      value: 'Out of Stock',
-      label: 'Out of Stock',
+      value: 'Rejected',
+      label: 'Rejected',
       color: 'error',
-      count: getOutLength(),
+      count: getInvoiceLength('Rejected'),
     },
-    // {
-    //   value: 'Received',
-    //   label: 'Out of Stock',
-    //   color: 'info',
-    //   count: getOutLength(),
-    // },
+    {
+      value: 'Received',
+      label: 'Received',
+      color: 'info',
+      count: getInvoiceLength('Received'),
+    },
   ];
 
   const handleFilters = useCallback(
@@ -414,13 +411,7 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   }
 
   if (status !== 'all') {
-    if(status === 'Out of Stock'){
-      inputData = (() => inputData.filter((item) => item.quantity <= 0))()
-    }else if(status === 'Low Stock'){
-      inputData = (() => inputData.filter((item) => (item.quantity <= item.parLevel) && (item.quantity > 0)))()
-    }else if(status === 'In Stock'){
-      inputData = (() => inputData.filter((item) => item.quantity > item.parLevel))()
-    }
+    inputData = inputData.filter((invoice) => invoice.status === status);
   }
 
   if (service.length) {

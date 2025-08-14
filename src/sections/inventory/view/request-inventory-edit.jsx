@@ -180,17 +180,24 @@ export default function CleaningTaskEditForm({ task }) {
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{}}>
           <CustomBreadcrumbs
-            heading="Inventory"
+            heading="Inventory Requests"
             links={[
               { name: 'Dashboard', href: paths.dashboard.root },
               // { name: 'Check-In', href: paths.dashboard.booking.root },
-              { name: 'List' },
+              { name: 'Inventory Requests' },
             ]}
             sx={{
               mb: { xs: 3, md: 5 },
             }}
           />
-
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Iconify icon="material-symbols:add-box" />}
+            onClick={() => router.push('/dashboard/inventory/request/assign')}
+          >
+            Assign Inventory Request
+          </Button>
         </Stack>
         <Stack
           direction={{ xs: 'column', md: 'row' }}
@@ -202,8 +209,8 @@ export default function CleaningTaskEditForm({ task }) {
           gap={2}
         >
           <InvoiceAnalytic
-            title="Total Items"
-            total={200}
+            title="Requested"
+            total={10}
             percent={5}
             price={0}
             icon="tdesign:task"
@@ -211,8 +218,8 @@ export default function CleaningTaskEditForm({ task }) {
           />
 
           <InvoiceAnalytic
-            title="In Stock"
-            total={150}
+            title="Approved"
+            total={50}
             percent={50}
             price={0}
             icon="ic:round-check-circle"
@@ -220,21 +227,21 @@ export default function CleaningTaskEditForm({ task }) {
           />
 
           <InvoiceAnalytic
-            title="Low Stock"
-            total={40}
+            title="Rejected"
+            total={5}
             percent={15}
             price={0}
             icon="material-symbols:cancel"
-            color={theme.palette.warning.main}
+            color={theme.palette.error.main}
           />
 
           <InvoiceAnalytic
-            title="Out of Stock"
-            total={10}
+            title="Pending"
+            total={6}
             percent={10}
             price={0}
             icon="ph:package-bold"
-            color={theme.palette.error.main}
+            color={theme.palette.warning.main}
           />
         </Stack>
         {/* </Card> */}
