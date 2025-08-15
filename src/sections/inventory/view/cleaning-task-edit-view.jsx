@@ -96,7 +96,7 @@ export default function CleaningTaskEditForm({ task }) {
     <Box>
       <Grid container spacing={3}>
         {/* Room Info */}
-        <Grid item xs={12} md={6} sx={{ maxHeight: 1000, overflowY: 'auto' }}>
+        <Grid item xs={12} md={12} sx={{ maxHeight: 1000, overflowY: 'auto' }}>
           <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
             <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
               <Typography variant="h6" component="h2">
@@ -321,7 +321,7 @@ export default function CleaningTaskEditForm({ task }) {
       </Grid>
 
       {/* Footer */}
-      <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-start', gap: 2 }}>
+      <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
         <Button
           variant="outlined"
           color="inherit"

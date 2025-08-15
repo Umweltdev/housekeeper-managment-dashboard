@@ -148,12 +148,6 @@ export default function InvoiceListViewEdit() {
       color: 'error',
       count: getInvoiceLength('Rejected'),
     },
-    {
-      value: 'Received',
-      label: 'Received',
-      color: 'info',
-      count: getInvoiceLength('Received'),
-    },
   ];
 
   const handleFilters = useCallback(
