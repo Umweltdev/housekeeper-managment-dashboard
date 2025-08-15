@@ -33,6 +33,7 @@ const ICONS = {
   kanban: icon('ic_kanban'),
   folder: icon('ic_folder'),
   banking: icon('ic_banking'),
+  request: icon('ic_request'),
   booking: icon('ic_booking'),
   invoice: icon('ic_invoice'),
   product: icon('ic_product'),
@@ -129,6 +130,11 @@ export function useNavData() {
             title: t('Inventory'),
             path: paths.dashboard.inventory.root,
             icon: ICONS.ecommerce,
+          },
+          {
+            title: t('Inventory Requests'),
+            path: paths.dashboard.inventory.request,
+            icon: ICONS.request,
           },
           {
             title: t('schedule'),

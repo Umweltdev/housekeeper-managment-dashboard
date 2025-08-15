@@ -16,17 +16,18 @@ import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { Tab } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
-export default function CleaningTaskTableRow({
+export default function RequestInventoryTableRow({
   row,
   selected,
   onSelectRow,
   onEditRow,
   onDeleteRow,
 }) {
-  const { itemName, requestDate, quantity, status, parLevel } = row;
+  const { itemName, requestDate, quantity, status, parLevel, requestedBy } = row;
 
   const confirm = useBoolean();
   const popover = usePopover();
@@ -44,29 +45,40 @@ export default function CleaningTaskTableRow({
         </TableCell>
         <TableCell>{quantity}</TableCell>
         <TableCell>{parLevel}</TableCell>
+        <TableCell>{requestedBy}</TableCell>
         <TableCell>
           <Label
             variant="soft"
             color={
-              (quantity > parLevel && 'success') ||
-              ((quantity <= parLevel && quantity > 0 ) && 'warning') ||
-              (quantity <= 0 && 'error') ||
+              (status === 'Approved' && 'success') ||
+              (status === 'Requested' && 'warning') ||
+              (status === 'Rejected' && 'error') ||
+              (status === 'Received' && 'info') ||
               'default'
             }
           >
-            {
-              (quantity > parLevel && 'In Stock') ||
-              ((quantity <= parLevel && quantity > 0 ) && 'Low Stock') ||
-              (quantity <= 0 && 'Out of Stock') ||
-              'No Stock'
-            }
+            {status === 'Requested' ? 'Pending' : status}
           </Label>
         </TableCell>
 
-        <TableCell align="left" sx={{ px: 1 }}>
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
+        <TableCell align="left" sx={{ px: 1 }} className='flex'>
+          <div className='flex'>
+            <Button variant="contained"
+              disabled={status === 'Approved' || status === 'Received'}
+              color="success" className=''>
+                <Iconify icon="material-symbols:bookmark-check" />
+                Approve
+            </Button>
+          </div>
+        </TableCell>
+        <TableCell sx={{ px: 1 }}>
+          <Button variant="contained"
+            disabled={status === 'Rejected' || status === 'Received'}
+            className='flex items-center gap-4'
+            color="error">
+              <Iconify icon="material-symbols:cancel-presentation" />
+              Reject
+          </Button>
         </TableCell>
       </TableRow>
 
@@ -122,7 +134,7 @@ export default function CleaningTaskTableRow({
   );
 }
 
-CleaningTaskTableRow.propTypes = {
+RequestInventoryTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
   onSelectRow: PropTypes.func,

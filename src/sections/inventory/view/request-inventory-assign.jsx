@@ -34,7 +34,9 @@ import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-export default function UserDetailsView({ id }) {
+import { CLEANING_TASKS } from './cleaning-tasks';
+
+export default function RequestInventoryAssign({ id }) {
   const router = useRouter();
   const settings = useSettingsContext();
   const { enqueueSnackbar } = useSnackbar();
@@ -42,9 +44,10 @@ export default function UserDetailsView({ id }) {
 
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [openInventoryDialog, setOpenInventoryDialog] = useState(false);
+  const [assignee, setAssignee] = useState('')
 
   const [formData, setFormData] = useState({
-    items: [{ item: 'Pillows', quantity: 0 }],
+    items: [{ item: CLEANING_TASKS[0].itemName, quantity: 0 }],
     reason: '',
     isLowStock: false,
   });
@@ -68,7 +71,7 @@ export default function UserDetailsView({ id }) {
 
   const handleReset = () => {
     setFormData({
-      items: [{ item: 'Pillows', quantity: 0 }],
+      items: [{ item: CLEANING_TASKS[0].itemName, quantity: 0 }],
       reason: '',
       isLowStock: false,
     });
@@ -110,11 +113,12 @@ export default function UserDetailsView({ id }) {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Inventory Request"
+        heading="Assign Inventory Requests"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           { name: 'Inventory', href: paths.dashboard.inventory.root },
-          { name: 'Request', href: '' },
+          { name: 'Request', href: paths.dashboard.inventory.request },
+          { name: 'Assign', href: '' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
@@ -138,19 +142,8 @@ export default function UserDetailsView({ id }) {
                     value={item.item}
                     onChange={(e) => handleInputChange(index, 'item', e.target.value)}
                   >
-                    <MenuItem value="Pillows">Pillows</MenuItem>
-                    <MenuItem value="Blankets">Blankets</MenuItem>
-                    <MenuItem value="Sheets">Sheets</MenuItem>
-                    <MenuItem value="Towels">Towels</MenuItem>
-                    <MenuItem value="Toiletries">Toiletries Kit</MenuItem>
-                    <MenuItem value="Mattress Protectors">Mattress Protectors</MenuItem>
-                    <MenuItem value="Pillow Cases">Pillow Cases</MenuItem>
-                    <MenuItem value="Duvet Covers">Duvet Covers</MenuItem>
-                    <MenuItem value="Bathrobes">Bathrobes</MenuItem>
-                    <MenuItem value="Slippers">Slippers</MenuItem>
-                    <MenuItem value="Shower Curtains">Shower Curtains</MenuItem>
-                    <MenuItem value="Laundry Bags">Laundry Bags</MenuItem>
-                    <MenuItem value="Ironing Boards">Ironing Boards</MenuItem>
+                   { 
+                    CLEANING_TASKS.map((itemval, key)=>( <MenuItem value={itemval.itemName} key={key}>{itemval.itemName}</MenuItem> )) } 
                   </TextField>
 
                   <Stack direction="row" alignItems="center" spacing={1}>
@@ -225,12 +218,28 @@ export default function UserDetailsView({ id }) {
               </Box>
 
               <Divider />
+              <TextField
+                  select
+                  fullWidth
+                  label="Assignee"
+                  value={assignee}
+                  onChange={(e) => setAssignee(e.target.value)}
+                >
+                  {
+                      [...new Set(CLEANING_TASKS.map(item => item.requestedBy))].map((name, idx) => (
+                          <MenuItem value={name} key={idx}>
+                          {name}
+                          </MenuItem>
+                      ))
+                  }
+
+                </TextField>
 
               <TextField
                 fullWidth
                 multiline
                 rows={4}
-                label="Reason for Request"
+                label="Reason for Assignment"
                 value={formData.reason}
                 onChange={handleReasonChange}
               />
@@ -344,6 +353,6 @@ export default function UserDetailsView({ id }) {
   );
 }
 
-UserDetailsView.propTypes = {
+RequestInventoryAssign.propTypes = {
   id: PropTypes.string,
 };

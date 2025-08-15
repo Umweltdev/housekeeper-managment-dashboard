@@ -154,6 +154,8 @@ export const paths = {
     inventory: {
       root: `${ROOTS.DASHBOARD}/inventory`,
       new: `${ROOTS.DASHBOARD}/inventory/new`,
+      request: `${ROOTS.DASHBOARD}/inventory/request`,
+      edit: (id) => `${ROOTS.DASHBOARD}/inventory/${id}/edit`,
     },
     training: {
       root: `${ROOTS.DASHBOARD}/training`,

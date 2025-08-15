@@ -2,11 +2,11 @@ import { Helmet } from 'react-helmet-async';
 
 import { useParams } from 'src/routes/hooks';
 
-import { UserEditView } from 'src/sections/inventory/view';
+import { RequestInventory } from 'src/sections/inventory/view';
 
 // ----------------------------------------------------------------------
 
-export default function UserEditPage() {
+export default function InvoiceDetailsPage() {
   const params = useParams();
 
   const { id } = params;
@@ -14,10 +14,10 @@ export default function UserEditPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard: Inventory Update</title>
+        <title> Dashboard: New Inventory</title>
       </Helmet>
 
-      <UserEditView id={`${id}`} />
+      <RequestInventory  />
     </>
   );
 }
