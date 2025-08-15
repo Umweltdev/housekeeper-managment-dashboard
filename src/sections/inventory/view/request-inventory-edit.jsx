@@ -245,39 +245,10 @@ export default function CleaningTaskEditForm({ task }) {
           />
         </Stack>
         {/* </Card> */}
-        {/* <InvoiceListViewEdit /> */}
         <RequestInventoryListView/>
       </Container>
       {/* Footer */}
-      {/* <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-start', gap: 2 }}>
-        <Button
-          variant="outlined"
-          color="inherit"
-          startIcon={<Iconify icon="eva:close-fill" />}
-          onClick={() => router('/dashboard/inventory')}
-          disabled={isSaving}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSaveChanges}
-          startIcon={
-            isSaving ? (
-              <CircularProgress size={20} color="inherit" />
-            ) : (
-              <Iconify icon="eva:save-fill" />
-            )
-          }
-          disabled={isSaving}
-          sx={{ minWidth: 140 }}
-        >
-          {isSaving ? 'Saving...' : 'Save Changes'}
-        </Button>
-      </Box> */}
 
-      {/* Snackbar */}
       <Snackbar
         open={openSnackbar}
         autoHideDuration={1500}
