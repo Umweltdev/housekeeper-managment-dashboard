@@ -5,3 +5,4 @@ export { default as UserProfileView } from './user-profile-view';
 export { default as UserDetailsView } from './user-details-view';
 export { default as MaintenanceView } from './inventory-list-view'; // list
 export { default as RequestInventory } from './request-inventory-edit';
+export { default as MaintenanceFallback } from './maintenance-fallback';
