@@ -45,6 +45,11 @@ const InventoryEditPage = lazy(() => import('src/pages/dashboard/inventory/edit'
 const InventoryRequestPage = lazy(() => import('src/pages/dashboard/inventory/request'));
 const InventoryRequestAssignPage = lazy(() => import('src/pages/dashboard/inventory/assign'));
 
+// Maintenance ssection
+const MaintenanceListPage = lazy(() => import('src/pages/dashboard/maintenance/list'));
+const MaintenanceNewPage = lazy(() => import('src/pages/dashboard/maintenance/new'));
+const MaintenanceEditPage = lazy(() => import('src/pages/dashboard/maintenance/edit'));
+
 const TrainingListPage = lazy(() => import('src/pages/dashboard/training/list'));
 
 const ScheduleListPage = lazy(() => import('src/pages/dashboard/schedule/list'));
@@ -120,6 +125,14 @@ export const dashboardRoutes = [
           { path: ':id/edit', element: <InventoryEditPage /> },
           { path: 'request', element: <InventoryRequestPage /> },
           { path: 'request/assign', element: <InventoryRequestAssignPage /> },
+        ],
+      },
+      {
+        path: 'maintenance',
+        children: [
+          { element: <MaintenanceListPage />, index: true },
+          { path: ':id/edit', element: <MaintenanceEditPage /> },
+          { path: 'new', element: <MaintenanceNewPage /> },
         ],
       },
       {

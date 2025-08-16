@@ -157,6 +157,12 @@ export const paths = {
       request: `${ROOTS.DASHBOARD}/inventory/request`,
       edit: (id) => `${ROOTS.DASHBOARD}/inventory/${id}/edit`,
     },
+    maintenance: {
+      root: `${ROOTS.DASHBOARD}/maintenance`,
+      new: `${ROOTS.DASHBOARD}/maintenance/new`,
+      request: `${ROOTS.DASHBOARD}/maintenance/request`,
+      edit: (id) => `${ROOTS.DASHBOARD}/maintenance/${id}/edit`,
+    },
     training: {
       root: `${ROOTS.DASHBOARD}/training`,
       // new: `${ROOTS.DASHBOARD}/inventory/new`,
