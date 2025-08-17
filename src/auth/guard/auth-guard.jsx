@@ -37,7 +37,7 @@ function Container({ children }) {
 
   const { authenticated, method } = useAuthContext();
 
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(true);
 
   const check = useCallback(() => {
     if (!authenticated) {
@@ -55,10 +55,10 @@ function Container({ children }) {
     }
   }, [authenticated, method, router]);
 
-  useEffect(() => {
-    check();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   check();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   if (!checked) {
     return null;

@@ -26,6 +26,8 @@ import {
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
+import { CLEANING_TASKS } from './cleaning-tasks';
+
 const STATUS_OPTIONS = ['dirty', 'cleaned'];
 const STATUS_COLORS = {
   dirty: 'error',
@@ -48,6 +50,9 @@ export default function CleaningTaskEditForm({ task }) {
   const [status, setStatus] = useState(task.status);
   const [isSaving, setIsSaving] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
+  const [parLevel, setParlevel] = useState(task.parLevel || 0)
 
   const isStatusEditable = status === 'dirty' || status === 'cleaned';
 
@@ -127,7 +132,6 @@ export default function CleaningTaskEditForm({ task }) {
                 label="Inventory Name"
                 value={task.category}
                 fullWidth
-                InputProps={{ readOnly: true }}
               />
               <TextField
                 label="Description"
@@ -135,7 +139,6 @@ export default function CleaningTaskEditForm({ task }) {
                 multiline
                 rows={3}
                 fullWidth
-                InputProps={{ readOnly: true }}
               />
               {/* <TextField
                 label="Due Date"
@@ -145,7 +148,20 @@ export default function CleaningTaskEditForm({ task }) {
                 fullWidth
                 InputProps={{ readOnly: true }}
               /> */}
-
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <TextField
+                  label="Par Level"
+                  value={parLevel}
+                  onChange={(e)=> setParlevel(e.target.value)}
+                  fullWidth
+                />
+                <Chip
+                  label={task.parLevel}
+                  color={PRIORITY_COLORS[task.priority]}
+                  size="small"
+                  variant="soft"
+                />
+              </Stack>
               <Stack direction="row" alignItems="center" spacing={1}>
                 <TextField
                   label="Quantity"
@@ -160,32 +176,24 @@ export default function CleaningTaskEditForm({ task }) {
                   variant="soft"
                 />
               </Stack>
-
-              {isStatusEditable ? (
-                <TextField
-                  label="Cleaning Status"
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  select
-                  fullWidth
-                >
-                  {STATUS_OPTIONS.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option.charAt(0).toUpperCase() + option.slice(1)}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              ) : (
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <TextField
-                    label="Cleaning Status"
-                    value={status}
+                    select
                     fullWidth
-                    InputProps={{ readOnly: true }}
-                  />
+                    label="Status"
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                  >
+                    {
+                        [...new Set(CLEANING_TASKS.map(item => item.status))].map((statusName, idx) => (
+                            <MenuItem value={statusName} key={idx}>
+                            {statusName}
+                            </MenuItem>
+                        ))
+                    }
+                  </TextField>
                   <Chip label={status} color={STATUS_COLORS[status]} size="small" variant="soft" />
                 </Stack>
-              )}
             </Stack>
           </Paper>
         </Grid>
