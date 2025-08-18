@@ -7,14 +7,13 @@ import Container from '@mui/material/Container';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-
+import { useGetRoomTypes } from 'src/api/roomType';
 
 import Iconify from 'src/components/iconify';
 import EmptyContent from 'src/components/empty-content';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import { useGetRoomType } from 'src/api/roomType';
 import TourList from '../tour-list';
 import AnalyticTable from './analytic-table';
 
@@ -41,149 +40,26 @@ export default function TourListView() {
 
   const [sortBy, setSortBy] = useState('latest');
 
-  const [search, setSearch] = useState({
-    query: '',
-    results: [],
-  });
 
-  const { roomType, refreshRoomsType } = useGetRoomType();
+
+  const { roomTypes, refreshRoomsTypes } = useGetRoomTypes();
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  // const dateError = isAfter(filters.startDate, filters.endDate);
-  // console.log(roomType);
-
   const dataFiltered = applyFilter({
-    inputData: roomType,
+    inputData: roomTypes,
     filters,
     sortBy,
     // dateError,
   });
 
-  // console.log(dataFiltered);
 
-  // const canReset =
-  //   !!filters.destination.length ||
-  //   !!filters.tourGuides.length ||
-  //   !!filters.services.length ||
-  //   (!!filters.startDate && !!filters.endDate);
 
   const notFound = !dataFiltered?.length;
 
-  const handleFilters = useCallback((name, value) => {
-    setFilters((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  }, []);
 
-  const handleSortBy = useCallback((newValue) => {
-    setSortBy(newValue);
-  }, []);
 
-  const handleSearch = useCallback(
-    (inputValue) => {
-      setSearch((prevState) => ({
-        ...prevState,
-        query: inputValue,
-      }));
 
-      if (inputValue) {
-        const results = roomType.filter(
-          (tour) => tour.title.toLowerCase().indexOf(search.query.toLowerCase()) !== -1
-        );
-
-        setSearch((prevState) => ({
-          ...prevState,
-          results,
-        }));
-      }
-    },
-    [search.query, roomType]
-  );
-  // console.log(rooms[0]._id)
-  const handleFilterPublish = useCallback(
-    (event, newValue) => {
-      handleFilters('publish', newValue);
-    },
-    [handleFilters]
-  );
-  // const renderFilters = (
-  //   <Stack
-  //     spacing={3}
-  //     justifyContent="space-between"
-  //     alignItems={{ xs: 'flex-end', sm: 'center' }}
-  //     direction={{ xs: 'column', sm: 'row' }}
-  //   >
-  //     <Stack direction="row" spacing={1} flexShrink={0}>
-  //       <TourFilters
-  //         open={openFilters.value}
-  //         onOpen={openFilters.onTrue}
-  //         onClose={openFilters.onFalse}
-  //         //
-  //         filters={filters}
-  //         onFilters={handleFilters}
-  //         //
-  //         canReset={canReset}
-  //         onResetFilters={handleResetFilters}
-  //         //
-  //         serviceOptions={TOUR_SERVICE_OPTIONS.map((option) => option.label)}
-  //         tourGuideOptions={_tourGuides}
-  //         destinationOptions={countries.map((option) => option.label)}
-  //         //
-  //         dateError={dateError}
-  //       />
-
-  //       <TourSort sort={sortBy} onSort={handleSortBy} sortOptions={TOUR_SORT_OPTIONS} />
-  //     </Stack>
-  //   </Stack>
-  // );
-
-  const renderResults = (
-    <>
-      {/* <Tabs
-        value={filters.publish}
-        onChange={handleFilterPublish}
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
-      >
-        {['all', 'published', 'draft'].map((tab) => (
-          <Tab
-            key={tab}
-            iconPosition="end"
-            value={tab}
-            label={tab}
-            icon={
-              <Label
-                variant={((tab === 'all' || tab === filters?.publish) && 'filled') || 'soft'}
-                color={(tab === 'published' && 'info') || 'default'}
-              >
-                {tab === 'all' && roomType?.length}
-
-                {tab === 'published' &&
-                  roomType?.filter((post) => post.publish === 'published').length}
-
-                {tab === 'draft' && roomType?.filter((post) => post.publish === 'draft')?.length}
-              </Label>
-            }
-            sx={{ textTransform: 'capitalize' }}
-          />
-        ))}
-      </Tabs> */}
-      {/* <TourFiltersResult
-        filters={filters}
-        onResetFilters={handleResetFilters}
-        //
-        canReset={canReset}
-        onFilters={handleFilters}
-        //
-        results={dataFiltered.length}
-      /> */}
-    </>
-  );
-
-  // console.log(dataFiltered)
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -218,15 +94,15 @@ export default function TourListView() {
           mb: { xs: 3, md: 5 },
         }}
       >
-        <AnalyticTable/>
+        <AnalyticTable />
         {/* {renderFilters} */}
 
-        {renderResults}
+        {/* {renderResults} */}
       </Stack>
 
       {notFound && <EmptyContent title="No Data" filled sx={{ py: 10 }} />}
 
-      <TourList tours={dataFiltered} refreshRoomsType={refreshRoomsType} />
+      <TourList tours={dataFiltered} refreshRoomsTypes={refreshRoomsTypes} />
     </Container>
   );
 }

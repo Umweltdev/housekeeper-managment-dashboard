@@ -7,14 +7,13 @@ import Container from '@mui/material/Container';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-
+import { useGetRoomTypes } from 'src/api/roomType';
 
 import Iconify from 'src/components/iconify';
 import EmptyContent from 'src/components/empty-content';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import { useGetRoomType } from 'src/api/roomType';
 import TourList from '../tour-list';
 import AnalyticTable from './analytic-table';
 
@@ -46,7 +45,7 @@ export default function TourListView() {
     results: [],
   });
 
-  const { roomType, refreshRoomsType } = useGetRoomType();
+  const { roomTypes, refreshRoomsTypes } = useGetRoomTypes();
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -54,7 +53,7 @@ export default function TourListView() {
   // console.log(roomType);
 
   const dataFiltered = applyFilter({
-    inputData: roomType,
+    inputData: roomTypes,
     filters,
     sortBy,
     // dateError,
@@ -89,7 +88,7 @@ export default function TourListView() {
       }));
 
       if (inputValue) {
-        const results = roomType.filter(
+        const results = roomTypes.filter(
           (tour) => tour.title.toLowerCase().indexOf(search.query.toLowerCase()) !== -1
         );
 
@@ -99,7 +98,7 @@ export default function TourListView() {
         }));
       }
     },
-    [search.query, roomType]
+    [search.query, roomTypes]
   );
   // console.log(rooms[0]._id)
   const handleFilterPublish = useCallback(
@@ -226,7 +225,7 @@ export default function TourListView() {
 
       {notFound && <EmptyContent title="No Data" filled sx={{ py: 10 }} />}
 
-      <TourList tours={dataFiltered} refreshRoomsType={refreshRoomsType} />
+      <TourList tours={dataFiltered} refreshRoomsTypes={refreshRoomsTypes} />
     </Container>
   );
 }

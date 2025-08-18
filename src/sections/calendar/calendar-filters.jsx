@@ -17,7 +17,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 import { useGetRooms } from 'src/api/room';
-import { useGetRoomType } from 'src/api/roomType';
+import {  useGetRoomTypes } from 'src/api/roomType';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -26,7 +26,7 @@ import Scrollbar from 'src/components/scrollbar';
 
 export default function CalendarFilters({ open, onClose }) {
   const { rooms } = useGetRooms();
-  const { roomType } = useGetRoomType();
+  const { roomTypes } = useGetRoomTypes();
 
   // State for filters
   const [selectedRoomType, setSelectedRoomType] = useState('');
@@ -51,7 +51,7 @@ export default function CalendarFilters({ open, onClose }) {
 
     // Filter by room type
     if (selectedRoomType) {
-      filtered = filtered.filter((room) => room.roomType === selectedRoomType);
+      filtered = filtered.filter((room) => room.roomTypes === selectedRoomType);
     }
 
     // Filter by floor
@@ -140,7 +140,7 @@ export default function CalendarFilters({ open, onClose }) {
         fullWidth
       >
         <MenuItem value="">All</MenuItem>
-        {roomType.map((type) => (
+        {roomTypes.map((type) => (
           <MenuItem key={type._id} value={type._id}>
             {type.title}
           </MenuItem>
@@ -207,7 +207,7 @@ export default function CalendarFilters({ open, onClose }) {
               disableTypography
               primary={
                 <Typography variant="subtitle2" sx={{ fontSize: 13, mt: 0.5 }}>
-                  {roomType.find((rt) => rt._id === room.roomType)?.title || 'Unknown Room Type'}
+                  {roomTypes.find((rt) => rt._id === room.roomType)?.title || 'Unknown Room Type'}
                 </Typography>
               }
               secondary={

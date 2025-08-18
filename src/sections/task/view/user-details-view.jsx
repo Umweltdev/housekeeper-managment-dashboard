@@ -1,8 +1,9 @@
 /* eslint-disable spaced-comment */
 
+import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
 import { useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -15,60 +16,147 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Divider from '@mui/material/Divider';
 import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
 
-import { useRouter } from 'src/routes/hooks';
 import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import Iconify from 'src/components/iconify';
+import { useGetRooms } from 'src/api/room';
+import { useGetRoomTypes } from 'src/api/roomType';
+import { useGetUsers } from 'src/api/user';
+import axiosInstance from 'src/utils/axios';
 
-export default function UserDetailsView({ id }) {
+const STATUS_OPTIONS = ['dirty', 'cleaned', 'inspected'];
+const PRIORITY_OPTIONS = ['Low', 'Medium', 'High'];
+
+export default function TaskCreateView() {
   const settings = useSettingsContext();
   const { enqueueSnackbar } = useSnackbar();
-  const router = useRouter();
+  const navigate = useNavigate();
+  const { rooms, roomsLoading, roomsError } = useGetRooms();
+  const { roomTypes, roomTypesLoading, roomTypesError } = useGetRoomTypes();
+  const { users, usersLoading, usersError } = useGetUsers();
 
-  // Mock staff list (replace with API data)
-  const staffList = ['John Doe', 'Jane Smith', 'Michael Brown', 'Emily Davis', 'Chris Johnson'];
+  console.log('rooms list', rooms, 'roomsError', roomsError);
+  console.log('roomTypes list', roomTypes, 'roomTypesError', roomTypesError);
+  console.log('user list', users, 'usersError', usersError);
 
-  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
-    room: '',
-    category: '',
+    roomId: '',
+    roomType: 'Unknown',
+    roomTypeId: '',
     description: '',
     dueDate: '',
-    priority: '',
-    status: '',
+    priority: 'Medium',
+    status: 'dirty',
     assignedTo: '',
     type: 'cleaning',
     createDate: new Date().toISOString().slice(0, 16),
   });
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleReset = () => {
+  // Log formData changes for debugging
+  useEffect(() => {
+    console.log('formData updated:', formData);
+  }, [formData]);
+
+  // Filter rooms where isClean is false
+  const dirtyRooms = rooms ? rooms.filter((room) => !room.isClean) : [];
+
+  // Filter housekeepers
+  const housekeepers = users ? users.filter((user) => user.role === 'housekeeper') : [];
+
+  // Get room type image
+  const selectedRoomType = roomTypes?.find((type) => type._id === formData.roomTypeId);
+  const roomImage =
+    selectedRoomType?.images?.[0] || 'https://via.placeholder.com/300x150?text=No+Image';
+
+  // Auto-fill roomType and roomTypeId when roomId changes
+  useEffect(() => {
+    if (rooms && roomTypes && formData.roomId) {
+      const selectedRoom = rooms.find((room) => room._id === formData.roomId);
+      if (selectedRoom?.roomType) {
+        const roomTypeData = roomTypes.find((type) => type._id === selectedRoom.roomType);
+        setFormData((prev) => ({
+          ...prev,
+          roomType: roomTypeData?.title || 'Unknown',
+          roomTypeId: roomTypeData?._id || '',
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          roomType: 'Unknown',
+          roomTypeId: '',
+        }));
+      }
+    }
+  }, [formData.roomId, rooms, roomTypes]);
+
+  const handleReset = useCallback(() => {
     setFormData({
-      room: '',
-      category: '',
+      roomId: '',
+      roomType: 'Unknown',
+      roomTypeId: '',
       description: '',
       dueDate: '',
-      priority: '',
-      status: '',
+      priority: 'Medium',
+      status: 'dirty',
       assignedTo: '',
       type: 'cleaning',
       createDate: new Date().toISOString().slice(0, 16),
     });
-  };
+    setError(null);
+  }, []);
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     setIsSaving(true);
+    setError(null);
+
     try {
-      // Simulate save
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      enqueueSnackbar('Task created successfully!', { variant: 'success' });
-      console.log('Submitting task:', formData);
-      router.push(paths.dashboard.user.list);
+      const payload = {
+        status: {
+          statusType: formData.status,
+          description: formData.description,
+          maintenanceAndDamages: [],
+          detailedIssues: [],
+        },
+        roomId: formData.roomId || '',
+        housekeeperId: formData.assignedTo || null,
+        dueDate: formData.dueDate ? new Date(formData.dueDate).toISOString() : null,
+        priority: formData.priority.toLowerCase(),
+        roomType: formData.roomTypeId
+          ? { _id: formData.roomTypeId, title: formData.roomType }
+          : null,
+        type: formData.type,
+      };
+
+      console.log('Submitting payload:', payload);
+
+      const response = await axiosInstance.post('/api/task', payload);
+      if (response.data.success) {
+        enqueueSnackbar('Task created successfully!', { variant: 'success' });
+        setTimeout(() => {
+          navigate(paths.dashboard.task.root);
+        }, 1500);
+      } else {
+        setError(response.data.error || 'Failed to create task');
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to create task');
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [formData, enqueueSnackbar, navigate]);
+
+  if (roomsLoading || roomTypesLoading || usersLoading) {
+    return (
+      <Box>
+        <Typography>Loading...</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -76,7 +164,7 @@ export default function UserDetailsView({ id }) {
         heading="Create Cleaning Task"
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'Room Cleaning Assignments', href: paths.dashboard.user.list },
+          { name: 'Room Cleaning Assignments', href: paths.dashboard.task.root },
           { name: 'Create Task' },
         ]}
         sx={{ mb: { xs: 3, md: 5 } }}
@@ -88,23 +176,31 @@ export default function UserDetailsView({ id }) {
           <Card sx={{ p: 4, boxShadow: 3 }}>
             <Stack spacing={3}>
               <TextField
-                fullWidth
-                label="Room Number"
-                value={formData.room}
-                onChange={(e) => setFormData({ ...formData, room: e.target.value })}
-              />
-
-              <TextField
                 select
                 fullWidth
-                label="Category"
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                label="Room Number"
+                value={formData.roomId}
+                onChange={(e) => setFormData((prev) => ({ ...prev, roomId: e.target.value }))}
               >
-                <MenuItem value="Standard">Standard</MenuItem>
-                <MenuItem value="Deluxe">Deluxe</MenuItem>
-                <MenuItem value="Suite">Suite</MenuItem>
+                {dirtyRooms.length ? (
+                  dirtyRooms.map((room) => (
+                    <MenuItem key={room._id} value={room._id}>
+                      {room.roomNumber}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem value="" disabled>
+                    No dirty rooms available
+                  </MenuItem>
+                )}
               </TextField>
+
+              <TextField
+                fullWidth
+                label="Room Type"
+                value={formData.roomType}
+                InputProps={{ readOnly: true }}
+              />
 
               <TextField
                 fullWidth
@@ -112,7 +208,7 @@ export default function UserDetailsView({ id }) {
                 rows={3}
                 label="Description"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
               />
 
               <TextField
@@ -121,7 +217,7 @@ export default function UserDetailsView({ id }) {
                 label="Due Date"
                 InputLabelProps={{ shrink: true }}
                 value={formData.dueDate}
-                onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                onChange={(e) => setFormData((prev) => ({ ...prev, dueDate: e.target.value }))}
               />
 
               <TextField
@@ -129,11 +225,13 @@ export default function UserDetailsView({ id }) {
                 fullWidth
                 label="Priority"
                 value={formData.priority}
-                onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                onChange={(e) => setFormData((prev) => ({ ...prev, priority: e.target.value }))}
               >
-                <MenuItem value="Low">Low</MenuItem>
-                <MenuItem value="Medium">Medium</MenuItem>
-                <MenuItem value="High">High</MenuItem>
+                {PRIORITY_OPTIONS.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
               </TextField>
 
               <TextField
@@ -141,11 +239,13 @@ export default function UserDetailsView({ id }) {
                 fullWidth
                 label="Status"
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value }))}
               >
-                <MenuItem value="dirty">Dirty</MenuItem>
-                <MenuItem value="cleaned">Cleaned</MenuItem>
-                <MenuItem value="inspected">Inspected</MenuItem>
+                {STATUS_OPTIONS.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option.charAt(0).toUpperCase() + option.slice(1)}
+                  </MenuItem>
+                ))}
               </TextField>
 
               <TextField
@@ -153,16 +253,35 @@ export default function UserDetailsView({ id }) {
                 fullWidth
                 label="Assigned To"
                 value={formData.assignedTo}
-                onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
+                onChange={(e) => setFormData((prev) => ({ ...prev, assignedTo: e.target.value }))}
               >
-                {staffList.map((staff, index) => (
-                  <MenuItem key={index} value={staff}>
-                    {staff}
+                <MenuItem value="">None</MenuItem>
+                {housekeepers.length ? (
+                  housekeepers.map((user) => (
+                    <MenuItem key={user._id} value={user._id}>
+                      {user.name}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem value="" disabled>
+                    No housekeepers available
                   </MenuItem>
-                ))}
+                )}
               </TextField>
 
+              {housekeepers.length === 0 && (
+                <Alert severity="warning" sx={{ mt: 2 }}>
+                  No housekeepers available. Please assign users with the housekeeper role.
+                </Alert>
+              )}
+
               <Divider />
+
+              {error && (
+                <Alert severity="error" sx={{ mt: 2 }}>
+                  {error}
+                </Alert>
+              )}
 
               <Stack direction="row" spacing={2} justifyContent="flex-end">
                 <Button variant="outlined" onClick={handleReset}>
@@ -179,7 +298,7 @@ export default function UserDetailsView({ id }) {
                       <Iconify icon="eva:save-fill" />
                     )
                   }
-                  disabled={isSaving || !formData.room || !formData.assignedTo}
+                  disabled={isSaving || !formData.roomId}
                   sx={{ minWidth: 140 }}
                 >
                   {isSaving ? 'Saving...' : 'Create Task'}
@@ -191,65 +310,171 @@ export default function UserDetailsView({ id }) {
 
         {/* Right: Task Preview */}
         <Grid item xs={12} md={4}>
-          <Card sx={{ p: 3, boxShadow: 3, bgcolor: 'grey.50' }}>
-            <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-              Task Preview
-            </Typography>
+          <Card
+            sx={{
+              p: 2,
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+              borderRadius: 2,
+              bgcolor: 'background.paper',
+              display: 'flex',
+              flexDirection: 'column',
+              height: '100%',
+            }}
+          >
+            <Box
+              sx={{
+                p: 2,
+                bgcolor: 'primary.main',
+                borderRadius: '8px 8px 0 0',
+                mb: 2,
+              }}
+            >
+              <Typography variant="h5" color="white" fontWeight="medium">
+                Task Preview
+              </Typography>
+            </Box>
 
-            <Stack spacing={1.5}>
-              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', boxShadow: 1 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Room
-                </Typography>
-                <Typography variant="body1" fontWeight="bold">
-                  {formData.room || '-'}
-                </Typography>
+            <Box
+              component="img"
+              src={roomImage}
+              alt="Room Type"
+              sx={{
+                width: '100%',
+                height: 150,
+                objectFit: 'cover',
+                borderRadius: 1,
+                mb: 2,
+                border: '1px solid',
+                borderColor: 'grey.200',
+              }}
+            />
+
+            <Stack spacing={1} sx={{ pb: 2, flexGrow: 1 }}>
+              <Box
+                sx={{
+                  py: 1,
+                  px: 1.5,
+                  borderRadius: 1,
+                  border: '1px solid',
+                }}
+              >
+                <Stack direction="row" alignItems="top" spacing={1}>
+                  <Iconify icon="eva:home-fill" width={20} />
+                  <Box>
+                    <Typography variant="body2">Room</Typography>
+                    <Typography variant="body2" fontWeight="bold">
+                      {dirtyRooms.find((r) => r._id === formData.roomId)?.roomNumber || '-'}
+                    </Typography>
+                  </Box>
+                </Stack>
               </Box>
 
-              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', boxShadow: 1 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Category
-                </Typography>
-                <Typography>{formData.category || '-'}</Typography>
+              <Box
+                sx={{
+                  py: 1,
+                  px: 1.5,
+                  borderRadius: 1,
+                  border: '1px solid',
+                }}
+              >
+                <Stack direction="row" alignItems="top" spacing={1}>
+                  <Iconify icon="eva:grid-fill" width={20} />
+                  <Box>
+                    <Typography variant="body2">Room Type</Typography>
+                    <Typography variant="body2">{formData.roomType || '-'}</Typography>
+                  </Box>
+                </Stack>
               </Box>
 
-              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', boxShadow: 1 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Description
-                </Typography>
-                <Typography>{formData.description || '-'}</Typography>
+              <Box
+                sx={{
+                  py: 1,
+                  px: 1.5,
+                  borderRadius: 1,
+                  border: '1px solid',
+                }}
+              >
+                <Stack direction="row" alignItems="top" spacing={1}>
+                  <Iconify icon="eva:file-text-fill" width={20} />
+                  <Box>
+                    <Typography variant="body2">Description</Typography>
+                    <Typography variant="body2">{formData.description || '-'}</Typography>
+                  </Box>
+                </Stack>
               </Box>
 
-              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', boxShadow: 1 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Due Date
-                </Typography>
-                <Typography>
-                  {formData.dueDate ? new Date(formData.dueDate).toLocaleString() : '-'}
-                </Typography>
+              <Box
+                sx={{
+                  py: 1,
+                  px: 1.5,
+                  borderRadius: 1,
+                  border: '1px solid',
+                }}
+              >
+                <Stack direction="row" alignItems="top" spacing={1}>
+                  <Iconify icon="eva:calendar-fill" width={20} />
+                  <Box>
+                    <Typography variant="body2">Due Date</Typography>
+                    <Typography variant="body2">
+                      {formData.dueDate ? new Date(formData.dueDate).toLocaleString() : '-'}
+                    </Typography>
+                  </Box>
+                </Stack>
               </Box>
 
-              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', boxShadow: 1 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Priority
-                </Typography>
-                <Typography>{formData.priority || '-'}</Typography>
+              <Box
+                sx={{
+                  py: 1,
+                  px: 1.5,
+                  borderRadius: 1,
+                  border: '1px solid',
+                }}
+              >
+                <Stack direction="row" alignItems="top" spacing={1}>
+                  <Iconify icon="eva:alert-circle-fill" width={20} />
+                  <Box>
+                    <Typography variant="body2">Priority</Typography>
+                    <Typography variant="body2">{formData.priority || '-'}</Typography>
+                  </Box>
+                </Stack>
               </Box>
 
-              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', boxShadow: 1 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Status
-                </Typography>
-                <Typography sx={{ textTransform: 'capitalize' }}>
-                  {formData.status || '-'}
-                </Typography>
+              <Box
+                sx={{
+                  py: 1,
+                  px: 1.5,
+                  borderRadius: 1,
+                  border: '1px solid',
+                }}
+              >
+                <Stack direction="row" alignItems="top" spacing={1}>
+                  <Iconify icon="eva:checkmark-circle-2-fill" width={20} />
+                  <Box>
+                    <Typography variant="body2">Status</Typography>
+                    <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
+                      {formData.status || '-'}
+                    </Typography>
+                  </Box>
+                </Stack>
               </Box>
 
-              <Box sx={{ p: 2, borderRadius: 2, bgcolor: 'background.paper', boxShadow: 1 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Assigned To
-                </Typography>
-                <Typography>{formData.assignedTo || '-'}</Typography>
+              <Box
+                sx={{
+                  py: 1,
+                  px: 1.5,
+                  borderRadius: 1,
+                  border: '1px solid',
+                }}
+              >
+                <Stack direction="row" alignItems="top" spacing={1}>
+                  <Iconify icon="eva:person-fill" width={20} />
+                  <Box>
+                    <Typography variant="body2">Assigned To</Typography>
+                    <Typography variant="body2">
+                      {housekeepers.find((u) => u._id === formData.assignedTo)?.name || '-'}
+                    </Typography>
+                  </Box>
+                </Stack>
               </Box>
             </Stack>
           </Card>
@@ -259,6 +484,4 @@ export default function UserDetailsView({ id }) {
   );
 }
 
-UserDetailsView.propTypes = {
-  id: PropTypes.string,
-};
+TaskCreateView.propTypes = {};

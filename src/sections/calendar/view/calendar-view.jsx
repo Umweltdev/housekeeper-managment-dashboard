@@ -18,13 +18,15 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import { useGetRoomTypes } from 'src/api/roomType';
+
+
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useResponsive } from 'src/hooks/use-responsive';
 
 import { isAfter, isBetween } from 'src/utils/format-time';
 
 import { useGetBookings } from 'src/api/booking';
-import { useGetRoomType } from 'src/api/roomType';
 import { CALENDAR_COLOR_OPTIONS } from 'src/_mock/_calendar';
 
 import Iconify from 'src/components/iconify';
@@ -64,7 +66,7 @@ export default function CalendarView() {
   const settings = useSettingsContext();
   const smUp = useResponsive('up', 'sm');
   const openFilters = useBoolean();
-  const { roomTypes } = useGetRoomType();
+  const { roomTypes } = useGetRoomTypes();
   const { bookings, refreshBookings } = useGetBookings();
 
   const [filters, setFilters] = useState(defaultFilters);
@@ -72,9 +74,8 @@ export default function CalendarView() {
   const [roomTypeColors, setRoomTypeColors] = useState(ROOM_TYPE_COLORS);
 
   useEffect(() => {
-  setReservationTable(bookings);
-}, [bookings]);
-
+    setReservationTable(bookings);
+  }, [bookings]);
 
   // Update room type colors when roomTypes data changes
   useEffect(() => {

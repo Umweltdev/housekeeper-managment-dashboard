@@ -82,4 +82,8 @@ export const endpoints = {
     list: '/api/invoice',
     details: '/api/invoice',
   },
+  task: {
+    list: '/api/task',
+    details: '/api/task',
+  },
 };

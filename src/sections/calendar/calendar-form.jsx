@@ -22,7 +22,7 @@ import axiosInstance, { endpoints } from 'src/utils/axios';
 
 import { useGetRooms } from 'src/api/room';
 import { useGetBooking } from 'src/api/booking';
-import { useGetRoomType } from 'src/api/roomType';
+import { useGetRoomTypes } from 'src/api/roomType';
 
 // Custom Hooks and Utils
 import { useSnackbar } from 'src/components/snackbar';
@@ -33,7 +33,7 @@ import BookingConfirmationModal from './booking-confirmation-modal';
 export default function BookingForm({ currentEvent, onClose, onCreateReservation }) {
   const { enqueueSnackbar } = useSnackbar();
   const { rooms } = useGetRooms();
-  const { roomType } = useGetRoomType();
+  const { roomTypes } = useGetRoomTypes();
 
   const bookingId = currentEvent?.id?.split('-')[0];
   const { booking, bookingLoading } = useGetBooking(bookingId);
@@ -126,6 +126,7 @@ export default function BookingForm({ currentEvent, onClose, onCreateReservation
       setSelectedRooms([]);
     }
   }, [booking, bookingLoading, isEditMode]);
+
   // Get unique floors
   const floors = [...new Set(rooms?.map((room) => room?.floor?.name).filter(Boolean))];
 
@@ -184,7 +185,7 @@ export default function BookingForm({ currentEvent, onClose, onCreateReservation
       rooms: selectedRooms.map((room) => ({
         ...room,
         roomId: rooms.find((r) => r.roomNumber === room.roomNumber)?._id,
-        roomType: roomType.find((type) => type._id === room.roomType),
+        roomType: roomTypes.find((type) => type._id === room.roomType), // Fixed: roomType -> roomTypes
       })),
       paymentMode: formData.paymentMode,
     };
@@ -236,7 +237,7 @@ export default function BookingForm({ currentEvent, onClose, onCreateReservation
           },
         }}
       >
-        <Typography mb={2} SX={{ fontWeight: 'bold' }}>
+        <Typography mb={2} sx={{ fontWeight: 'bold' }}>
           {isEditMode ? 'Edit Booking' : 'Create New Booking'}
         </Typography>
 
@@ -312,11 +313,15 @@ export default function BookingForm({ currentEvent, onClose, onCreateReservation
                 <MenuItem value="" disabled>
                   Select Room Type
                 </MenuItem>
-                {roomType?.map((type) => (
-                  <MenuItem key={type._id} value={type._id}>
-                    {type.title}
-                  </MenuItem>
-                ))}
+                {roomTypes?.map(
+                  (
+                    type // Fixed: roomType -> roomTypes
+                  ) => (
+                    <MenuItem key={type._id} value={type._id}>
+                      {type.title}
+                    </MenuItem>
+                  )
+                )}
               </Select>
             </FormControl>
 
@@ -347,12 +352,7 @@ export default function BookingForm({ currentEvent, onClose, onCreateReservation
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
-                    rooms: [
-                      {
-                        ...prev.rooms[0],
-                        roomNumber: e.target.value,
-                      },
-                    ],
+                    rooms: [{ ...prev.rooms[0], roomNumber: e.target.value }],
                   }))
                 }
               >
@@ -375,12 +375,7 @@ export default function BookingForm({ currentEvent, onClose, onCreateReservation
               onChange={(newValue) =>
                 setFormData((prev) => ({
                   ...prev,
-                  rooms: [
-                    {
-                      ...prev.rooms[0],
-                      checkIn: newValue?.getTime(),
-                    },
-                  ],
+                  rooms: [{ ...prev.rooms[0], checkIn: newValue?.getTime() }],
                 }))
               }
               fullWidth
@@ -392,12 +387,7 @@ export default function BookingForm({ currentEvent, onClose, onCreateReservation
               onChange={(newValue) =>
                 setFormData((prev) => ({
                   ...prev,
-                  rooms: [
-                    {
-                      ...prev.rooms[0],
-                      checkOut: newValue?.getTime(),
-                    },
-                  ],
+                  rooms: [{ ...prev.rooms[0], checkOut: newValue?.getTime() }],
                 }))
               }
               fullWidth
@@ -427,12 +417,7 @@ export default function BookingForm({ currentEvent, onClose, onCreateReservation
             <Select
               label="Payment Mode"
               value={formData.paymentMode || ''}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  paymentMode: e.target.value,
-                }))
-              }
+              onChange={(e) => setFormData((prev) => ({ ...prev, paymentMode: e.target.value }))}
             >
               <MenuItem value="" disabled>
                 Select Payment Mode

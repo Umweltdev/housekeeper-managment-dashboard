@@ -10,7 +10,7 @@ import { Button, Select, MenuItem } from '@mui/material';
 import { useGetRooms } from 'src/api/room';
 import { useGetFloors } from 'src/api/floor';
 import { useGetBookings } from 'src/api/booking';
-import { useGetRoomType } from 'src/api/roomType';
+import { useGetRoomTypes } from 'src/api/roomType';
 import { info, success, warning } from 'src/theme/palette';
 
 import { useSettingsContext } from 'src/components/settings';
@@ -68,7 +68,7 @@ export default function OverviewAnalyticsView() {
   const settings = useSettingsContext();
   const { bookings } = useGetBookings();
   const { rooms } = useGetRooms();
-  const { roomType } = useGetRoomType();
+  const { roomTypes } = useGetRoomTypes();
   const { floor } = useGetFloors();
   const [range, setRange] = useState('week');
   const [leadRange, setLeadRange] = useState('week');
@@ -77,7 +77,7 @@ export default function OverviewAnalyticsView() {
   console.log(floor);
 
   console.log(rooms);
-  console.log(roomType);
+  console.log(roomTypes);
 
   const performanceRef = useRef(null);
   const taskRef = useRef(null);

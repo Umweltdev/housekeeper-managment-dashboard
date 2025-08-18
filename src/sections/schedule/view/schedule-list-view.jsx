@@ -117,7 +117,6 @@ export default function ScheduleListView() {
           {isChronological ? 'Reverse Order' : 'Chronological'}
         </Button>
       </Stack>
-   
 
       <Card
         sx={{

@@ -27,18 +27,18 @@ import { formatNairaAmountLong } from 'src/utils/format-naira-short';
 
 import { useGetUser } from 'src/api/user';
 import { useGetFloors } from 'src/api/floor';
-import { useGetRoomType } from 'src/api/roomType';
 import {
   useExtendStay,
   useGetBookings,
   useCancelBooking,
   useCheckoutBooking,
 } from 'src/api/booking';
+import { useGetRoomTypes } from 'src/api/roomType';
 
 function UserBookingTable({ id }) {
   const { user: currentUser } = useGetUser(id);
   const { bookings } = useGetBookings();
-  const { roomType } = useGetRoomType();
+  const { roomTypes } = useGetRoomTypes();
   const { floor } = useGetFloors();
   const { cancelBooking } = useCancelBooking();
   const { checkoutBooking } = useCheckoutBooking();
@@ -71,11 +71,11 @@ function UserBookingTable({ id }) {
 
   const roomTypeMap = useMemo(
     () =>
-      roomType?.reduce((map, room) => {
+      roomTypes?.reduce((map, room) => {
         map[room._id] = room.title;
         return map;
       }, {}),
-    [roomType]
+    [roomTypes]
   );
 
   useEffect(() => {

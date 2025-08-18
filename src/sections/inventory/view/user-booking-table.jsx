@@ -22,12 +22,13 @@ import {
   TableContainer,
 } from '@mui/material';
 
+import { useGetRoomTypes } from 'src/api/roomType';
+
 import { fDate } from 'src/utils/format-time';
 import { formatNairaAmountLong } from 'src/utils/format-naira-short';
 
 import { useGetUser } from 'src/api/user';
 import { useGetFloors } from 'src/api/floor';
-import { useGetRoomType } from 'src/api/roomType';
 import {
   useExtendStay,
   useGetBookings,
@@ -38,7 +39,7 @@ import {
 function UserBookingTable({ id }) {
   const { user: currentUser } = useGetUser(id);
   const { bookings } = useGetBookings();
-  const { roomType } = useGetRoomType();
+  const { roomTypes } = useGetRoomTypes();
   const { floor } = useGetFloors();
   const { cancelBooking } = useCancelBooking();
   const { checkoutBooking } = useCheckoutBooking();
@@ -62,21 +63,6 @@ function UserBookingTable({ id }) {
   const handleRowToggle = (rowId) => {
     setExpandedRow((prev) => (prev === rowId ? null : rowId));
   };
-
-  // Create a map of roomType by id for fast lookup
-  // const roomTypeMap = roomType?.reduce((map, room) => {
-  //   map[room._id] = room.title;
-  //   return map;
-  // }, {});
-
-  const roomTypeMap = useMemo(
-    () =>
-      roomType?.reduce((map, room) => {
-        map[room._id] = room.title;
-        return map;
-      }, {}),
-    [roomType]
-  );
 
   useEffect(() => {
     if (currentUser?.email && bookings?.length) {
@@ -110,59 +96,56 @@ function UserBookingTable({ id }) {
     setSnackbar({ open: true, message, severity });
   }, []);
 
- const handleExtendStay = useCallback(() => {
-   console.log('Extend Stay clicked');
-   setExtendModalOpen(true);
-   setNewCheckOutDate(null);
-   setPaymentMode('');
-   handleMenuClose();
- }, []);
+  const handleExtendStay = useCallback(() => {
+    console.log('Extend Stay clicked');
+    setExtendModalOpen(true);
+    setNewCheckOutDate(null);
+    setPaymentMode('');
+    handleMenuClose();
+  }, []);
 
   const handleExtendModalClose = () => {
     setExtendModalOpen(false);
     // setSelectedBooking(null);
   };
 
-const submitExtendStay = async () => {
-  if (!newCheckOutDate || !paymentMode) {
-    setSnackbar({ open: true, message: 'Please complete all fields', severity: 'warning' });
-    return;
-  }
-
-  const roomExtensions = selectedBooking.rooms.map((room) => ({
-    roomId: room.roomId._id,
-    newCheckOutDate: newCheckOutDate.toISOString(),
-  }));
-
-  const payload = {
-    roomExtensions,
-    paymentMode,
-  };
-
-  console.log('Submitting extend stay with:', payload);
-
-  try {
-    const response = await extendStay(selectedBooking._id, payload);
-
-    console.log('Response:', response);
-
-    if (response.paystackUrl) {
-      window.location.href = response.paystackUrl; // Redirect for payment
-    } else {
-      setSnackbar({
-        open: true,
-        message: 'Booking extended successfully!',
-        severity: 'success',
-      });
+  const submitExtendStay = async () => {
+    if (!newCheckOutDate || !paymentMode) {
+      setSnackbar({ open: true, message: 'Please complete all fields', severity: 'warning' });
+      return;
     }
-  } catch (error) {
-    console.error('Error extending stay:', error);
-    setSnackbar({ open: true, message: 'Error extending stay', severity: 'error' });
-  }
-};
 
+    const roomExtensions = selectedBooking.rooms.map((room) => ({
+      roomId: room.roomId._id,
+      newCheckOutDate: newCheckOutDate.toISOString(),
+    }));
 
+    const payload = {
+      roomExtensions,
+      paymentMode,
+    };
 
+    console.log('Submitting extend stay with:', payload);
+
+    try {
+      const response = await extendStay(selectedBooking._id, payload);
+
+      console.log('Response:', response);
+
+      if (response.paystackUrl) {
+        window.location.href = response.paystackUrl; // Redirect for payment
+      } else {
+        setSnackbar({
+          open: true,
+          message: 'Booking extended successfully!',
+          severity: 'success',
+        });
+      }
+    } catch (error) {
+      console.error('Error extending stay:', error);
+      setSnackbar({ open: true, message: 'Error extending stay', severity: 'error' });
+    }
+  };
 
   const handleCheckOut = async (bookingId) => {
     setLoadingBookingId(bookingId);

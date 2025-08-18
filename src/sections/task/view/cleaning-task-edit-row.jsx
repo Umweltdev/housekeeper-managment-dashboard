@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-
+import axios from 'axios';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import TableRow from '@mui/material/TableRow';
@@ -9,14 +9,13 @@ import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-
 import { useBoolean } from 'src/hooks/use-boolean';
 import { fDate, fTime } from 'src/utils/format-time';
-
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { useSnackbar } from 'src/components/snackbar';
 
 // ----------------------------------------------------------------------
 
@@ -26,53 +25,38 @@ export default function CleaningTaskTableRow({
   onSelectRow,
   onEditRow,
   onDeleteRow,
+  onMoveToInspected,
 }) {
   const { room, category, description, assignedTo, dueDate, priority, status } = row;
 
+  const { enqueueSnackbar } = useSnackbar();
   const confirm = useBoolean();
   const popover = usePopover();
-
-  const [markingCleaned, setMarkingCleaned] = useState(false);
   const [markingInspected, setMarkingInspected] = useState(false);
 
-  const canMarkAsCleaned = status === 'dirty';
-  const canMarkAsInspected = status === 'cleaned';
-
-  const handleMarkAsCleaned = async () => {
-    setMarkingCleaned(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    if (typeof window !== 'undefined') {
-      const event = new CustomEvent('taskStatusUpdated', {
-        detail: { id: row.id, status: 'cleaned' },
-      });
-      window.dispatchEvent(event);
-    }
-    setMarkingCleaned(false);
-    popover.onClose();
-  };
+  const canMarkAsInspected = status === 'cleaned' || status === 'inspected';
 
   const handleMarkAsInspected = async () => {
     setMarkingInspected(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    if (typeof window !== 'undefined') {
-      const event = new CustomEvent('taskStatusUpdated', {
-        detail: { id: row.id, status: 'inspected' },
-      });
-      window.dispatchEvent(event);
+    try {
+      const response = await axios.patch(`/api/tasks/${row.id}/markAsInspected`);
+      if (response.data.success) {
+        const newStatus = response.data.data.status.statusType;
+        onMoveToInspected(row.id, newStatus);
+        enqueueSnackbar(`Task marked as ${newStatus}!`, { variant: 'success' });
+      } else {
+        enqueueSnackbar(response.data.error || 'Failed to update task', { variant: 'error' });
+      }
+    } catch (error) {
+      enqueueSnackbar(error.message || 'Failed to update task', { variant: 'error' });
+    } finally {
+      setMarkingInspected(false);
+      popover.onClose();
     }
-    setMarkingInspected(false);
-    popover.onClose();
   };
-
-  const tooltipCleaned = (() => {
-    if (canMarkAsCleaned) return '';
-    if (status === 'cleaned') return 'Already cleaned';
-    return 'Cannot mark this task as cleaned';
-  })();
 
   const tooltipInspected = (() => {
     if (canMarkAsInspected) return '';
-    if (status === 'inspected') return 'Already inspected';
     return 'Cannot mark this task as inspected';
   })();
 
@@ -85,13 +69,13 @@ export default function CleaningTaskTableRow({
 
         <TableCell>{room}</TableCell>
         <TableCell>{category}</TableCell>
-        <TableCell>{description}</TableCell>
+        <TableCell sx={{ width: '18rem' }}>{description}</TableCell>
         <TableCell>{assignedTo}</TableCell>
 
         <TableCell>
-          <Typography variant="body2">{fDate(dueDate)}</Typography>
+          <Typography variant="body2">{dueDate ? fDate(dueDate) : 'N/A'}</Typography>
           <Typography variant="caption" color="text.secondary">
-            {fTime(dueDate)}
+            {dueDate ? fTime(dueDate) : 'N/A'}
           </Typography>
         </TableCell>
 
@@ -138,7 +122,6 @@ export default function CleaningTaskTableRow({
         arrow="right-top"
         sx={{ width: 200 }}
       >
-        {/* Mark as Inspected */}
         <Tooltip title={tooltipInspected}>
           <span>
             <MenuItem
@@ -161,12 +144,11 @@ export default function CleaningTaskTableRow({
               ) : (
                 <Iconify icon="mdi:clipboard-check" />
               )}
-              Mark as Inspected
+              Mark as {status === 'inspected' ? 'Cleaned' : 'Inspected'}
             </MenuItem>
           </span>
         </Tooltip>
 
-        {/* Edit Option */}
         <MenuItem
           onClick={() => {
             onEditRow();
@@ -176,9 +158,19 @@ export default function CleaningTaskTableRow({
           <Iconify icon="solar:pen-bold" />
           Edit
         </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            confirm.onTrue();
+            popover.onClose();
+          }}
+          sx={{ color: 'error.main' }}
+        >
+          <Iconify icon="solar:trash-bin-trash-bold" />
+          Delete
+        </MenuItem>
       </CustomPopover>
 
-      {/* Confirm Delete Dialog */}
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
@@ -204,6 +196,7 @@ export default function CleaningTaskTableRow({
 CleaningTaskTableRow.propTypes = {
   onDeleteRow: PropTypes.func,
   onEditRow: PropTypes.func,
+  onMoveToInspected: PropTypes.func,
   onSelectRow: PropTypes.func,
   row: PropTypes.object,
   selected: PropTypes.bool,

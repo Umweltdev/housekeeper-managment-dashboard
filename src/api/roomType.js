@@ -5,27 +5,28 @@ import { fetcher, endpoints } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
-export function useGetRoomType() {
+export function useGetRoomTypes() {
   const URL = endpoints.roomType.list;
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
   // console.log(data)
-  const refreshRoomsType = useCallback(() => {
+  const refreshRoomsTypes = useCallback(() => {
     mutate(URL);
   }, [URL]);
   const memoizedValue = useMemo(
     () => ({
-      roomType: data || [],
-      roomTypeLoading: isLoading,
-      roomTypeError: error,
-      roomTypeValidating: isValidating,
-      roomTypeEmpty: !isLoading && !data?.length,
-      refreshRoomsType,
+      roomTypes: data || [],
+      roomTypesLoading: isLoading,
+      roomTypesError: error,
+      roomTypesValidating: isValidating,
+      roomTypesEmpty: !isLoading && !data?.length,
+      refreshRoomsTypes,
     }),
-    [data, error, isLoading, isValidating, refreshRoomsType]
+    [data, error, isLoading, isValidating, refreshRoomsTypes]
   );
 
   return memoizedValue;
 }
+
 
 // ----------------------------------------------------------------------
 
