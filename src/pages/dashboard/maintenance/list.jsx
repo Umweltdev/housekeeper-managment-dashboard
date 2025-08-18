@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 
-import { MaintenanceFallback } from 'src/sections/maintenance/view';
+import { MaintenanceView } from 'src/sections/maintenance/view';
 
 // ----------------------------------------------------------------------
 
-export default function MaintenancePage() {
+export default function UserListPage() {
   return (
     <>
       <Helmet>
-        <title> Maintenane</title>
+        <title> Dashboard: Maintenance List</title>
       </Helmet>
 
-      <MaintenanceFallback />
+      <MaintenanceView />
     </>
   );
 }

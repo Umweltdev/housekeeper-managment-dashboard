@@ -45,6 +45,7 @@ const ICONS = {
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
   education: icon('ic_cast_for_education_outline'),
+  maintenance: icon('ic_maintenance')
 };
 
 // ----------------------------------------------------------------------
@@ -135,6 +136,11 @@ export function useNavData() {
             title: t('Inventory Requests'),
             path: paths.dashboard.inventory.request,
             icon: ICONS.request,
+          },
+          {
+            title: t('Maintenance Requests'),
+            path: paths.dashboard.maintenance.root,
+            icon: ICONS.maintenance,
           },
           {
             title: t('schedule'),
