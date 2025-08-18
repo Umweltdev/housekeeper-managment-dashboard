@@ -110,7 +110,7 @@ export default function CleaningTaskEditForm({ task }) {
           variant="outlined"
           color="inherit"
           startIcon={<Iconify icon="eva:close-fill" />}
-          onClick={() => router('/dashboard/task')}
+          onClick={() => router('/dashboard/inventory')}
           disabled={isSaving}
         >
           Cancel
