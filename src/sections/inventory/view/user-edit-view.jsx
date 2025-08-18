@@ -8,7 +8,7 @@ import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { useGetUser } from 'src/api/user';
-import { CLEANING_TASKS } from './cleaning-tasks';
+import { INVENTORY_LIST } from './cleaning-tasks';
 
 import CleaningTaskEditForm from './cleaning-task-edit-view';
 // import { get } from 'lodash';
@@ -19,8 +19,7 @@ export default function TaskEditView({ id }) {
   const settings = useSettingsContext();
   const { user } = useGetUser(id);
 
-  const task = CLEANING_TASKS.find((t) => t.id.toString() === id);
-  console.log(task);
+  const task = INVENTORY_LIST.find((t) => t.id.toString() === id);
 
   // const getUserDetails = async (userId) => {
   //   try {

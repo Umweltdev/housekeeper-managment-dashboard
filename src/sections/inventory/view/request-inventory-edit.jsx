@@ -135,10 +135,10 @@ export default function CleaningTaskEditForm({ task }) {
   }, [dataFiltered.length, dataInPage.length, enqueueSnackbar, table, tableData]);
 
   // Extract check-in dates
-  const checkInDates = bookings
+  const checkInDates = bookings;
   // remove comments
-    // .filter((booking) => booking.status === 'checkedIn')
-    // .flatMap((booking) => booking.rooms.map((room) => new Date(room.checkIn || booking.createdAt)));
+  // .filter((booking) => booking.status === 'checkedIn')
+  // .flatMap((booking) => booking.rooms.map((room) => new Date(room.checkIn || booking.createdAt)));
 
   // Calculate monthly averages
   const calculateMonthlyAverage = () => {
@@ -245,7 +245,7 @@ export default function CleaningTaskEditForm({ task }) {
           />
         </Stack>
         {/* </Card> */}
-        <RequestInventoryListView/>
+        <RequestInventoryListView />
       </Container>
       {/* Footer */}
 
@@ -288,8 +288,8 @@ export default function CleaningTaskEditForm({ task }) {
 
 function applyFilter({ inputData, comparator, filters }) {
   // remove the if statement
-  if(!inputData.lenght){
-    return []
+  if (!inputData.lenght) {
+    return [];
   }
   const { name, status } = filters;
 
@@ -319,4 +319,3 @@ function applyFilter({ inputData, comparator, filters }) {
 // InventoryListView.propTypes = {
 //   // Add any props your component receives here
 // };
-  
