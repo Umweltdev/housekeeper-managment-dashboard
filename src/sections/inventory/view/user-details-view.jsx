@@ -44,7 +44,7 @@ export default function UserDetailsView({ id }) {
   const [openInventoryDialog, setOpenInventoryDialog] = useState(false);
 
   const [formData, setFormData] = useState({
-    items: [{ item: 'Pillows', quantity: 0 }],
+    items: [{ item: 'Pillows', quantity: 0, parLevel: 15 }],
     reason: '',
     isLowStock: false,
   });
@@ -62,13 +62,13 @@ export default function UserDetailsView({ id }) {
   const handleAddItem = () => {
     setFormData((prev) => ({
       ...prev,
-      items: [...prev.items, { item: '', quantity: 0 }],
+      items: [...prev.items, { item: '', quantity: 0, parLevel: 15 }],
     }));
   };
 
   const handleReset = () => {
     setFormData({
-      items: [{ item: 'Pillows', quantity: 0 }],
+      items: [{ item: 'Pillows', quantity: 0, parLevel: 15 }],
       reason: '',
       isLowStock: false,
     });
@@ -152,6 +152,12 @@ export default function UserDetailsView({ id }) {
                     <MenuItem value="Laundry Bags">Laundry Bags</MenuItem>
                     <MenuItem value="Ironing Boards">Ironing Boards</MenuItem>
                   </TextField>
+                  <TextField
+                    label="Par Level"
+                    value={item.parLevel}
+                    onChange={(e) => handleInputChange(index, 'parLevel', e.target.value)}
+                    fullWidth
+                  />
 
                   <Stack direction="row" alignItems="center" spacing={1}>
                     <IconButton

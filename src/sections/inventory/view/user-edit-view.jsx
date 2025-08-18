@@ -47,7 +47,7 @@ export default function TaskEditView({ id }) {
           },
           {
             name: 'Inventory List',
-            href: paths.dashboard.task.root,
+            href: paths.dashboard.inventory.root,
           },
           { name: 'Inventory Update' },
         ]}
