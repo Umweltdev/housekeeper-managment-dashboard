@@ -61,23 +61,28 @@ export default function RequestInventoryTableRow({
           </Label>
         </TableCell>
 
-        <TableCell align="left" sx={{ px: 1 }} className='flex'>
-          <div className='flex'>
-            <Button variant="contained"
+        <TableCell align="left" sx={{ px: 1 }} className="flex">
+          <div className="flex">
+            <Button
+              variant="contained"
               disabled={status === 'Approved' || status === 'Received'}
-              color="success" className=''>
-                <Iconify icon="material-symbols:bookmark-check" />
-                Approve
+              color="success"
+              className=""
+            >
+              <Iconify icon="material-symbols:bookmark-check" />
+              Approve
             </Button>
           </div>
         </TableCell>
         <TableCell sx={{ px: 1 }}>
-          <Button variant="contained"
+          <Button
+            variant="contained"
             disabled={status === 'Rejected' || status === 'Received'}
-            className='flex items-center gap-4'
-            color="error">
-              <Iconify icon="material-symbols:cancel-presentation" />
-              Reject
+            className="flex items-center gap-4"
+            color="error"
+          >
+            <Iconify icon="material-symbols:cancel-presentation" />
+            Reject
           </Button>
         </TableCell>
       </TableRow>

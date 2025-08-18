@@ -1,22 +1,22 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 
 import Button from '@mui/material/Button';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
 import TableCell from '@mui/material/TableCell';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import { Stack } from '@mui/material';
 
 import { useBoolean } from 'src/hooks/use-boolean';
-
 import { fDate } from 'src/utils/format-time';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
-import { Tab } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -31,6 +31,32 @@ export default function RequestInventoryTableRow({
 
   const confirm = useBoolean();
   const popover = usePopover();
+
+  // Local loading states
+  const [loadingApprove, setLoadingApprove] = useState(false);
+  const [loadingReject, setLoadingReject] = useState(false);
+
+  const handleApprove = async () => {
+    setLoadingApprove(true);
+    try {
+      // simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // TODO: call your API or parent callback here
+    } finally {
+      setLoadingApprove(false);
+    }
+  };
+
+  const handleReject = async () => {
+    setLoadingReject(true);
+    try {
+      // simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // TODO: call your API or parent callback here
+    } finally {
+      setLoadingReject(false);
+    }
+  };
 
   return (
     <>
@@ -61,24 +87,70 @@ export default function RequestInventoryTableRow({
           </Label>
         </TableCell>
 
-        <TableCell align="left" sx={{ px: 1 }} className='flex'>
-          <div className='flex'>
-            <Button variant="contained"
-              disabled={status === 'Approved' || status === 'Received'}
-              color="success" className=''>
-                <Iconify icon="material-symbols:bookmark-check" />
-                Approve
+        <TableCell align="center" sx={{ px: 1 }}>
+          <Stack direction="row" spacing={1} justifyContent="center">
+            {/* Approve Button */}
+            <Button
+              size="small"
+              variant="contained"
+              color="success"
+              disabled={loadingApprove || status === 'Approved' || status === 'Received'}
+              onClick={handleApprove}
+              sx={{
+                minWidth: 90,
+                height: 28,
+                fontSize: '0.7rem',
+                textTransform: 'capitalize',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 0.5,
+                px: 1,
+                py: 0.2,
+              }}
+            >
+              {loadingApprove ? (
+                <CircularProgress size={16} color="inherit" />
+              ) : (
+                <>
+                  <Iconify icon="material-symbols:check-circle-rounded" width={14} height={14} />
+                  Approve
+                </>
+              )}
             </Button>
-          </div>
-        </TableCell>
-        <TableCell sx={{ px: 1 }}>
-          <Button variant="contained"
-            disabled={status === 'Rejected' || status === 'Received'}
-            className='flex items-center gap-4'
-            color="error">
-              <Iconify icon="material-symbols:cancel-presentation" />
-              Reject
-          </Button>
+
+            {/* Reject Button */}
+            <Button
+              size="small"
+              variant="outlined"
+              color="error"
+              disabled={loadingReject || status === 'Rejected' || status === 'Received'}
+              onClick={handleReject}
+              sx={{
+                minWidth: 90,
+                height: 28,
+                fontSize: '0.7rem',
+                textTransform: 'capitalize',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 0.5,
+                px: 1,
+                py: 0.2,
+              }}
+            >
+              {loadingReject ? (
+                <CircularProgress size={16} color="inherit" />
+              ) : (
+                <>
+                  <Iconify icon="material-symbols:cancel" width={14} height={14} />
+                  Reject
+                </>
+              )}
+            </Button>
+          </Stack>
         </TableCell>
       </TableRow>
 
@@ -88,7 +160,6 @@ export default function RequestInventoryTableRow({
         arrow="right-top"
         sx={{ width: 200 }}
       >
-        {/* Mark as Inspected */}
         <MenuItem
           onClick={() => {
             onEditRow();
@@ -99,7 +170,6 @@ export default function RequestInventoryTableRow({
           Edit
         </MenuItem>
 
-        {/* Edit Option */}
         <MenuItem
           onClick={() => {
             confirm.onTrue();

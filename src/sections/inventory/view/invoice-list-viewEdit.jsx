@@ -39,7 +39,7 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import { CLEANING_TASKS } from './cleaning-tasks';
+import { INVENTORY_LIST } from './cleaning-tasks';
 import InvoiceTableToolbar from './invoice-table-toolbar';
 import CleaningTaskTableRow from './cleaning-task-edit-row';
 import InvoiceTableFiltersResult from './invoice-table-filters-result';
@@ -51,7 +51,7 @@ const TABLE_HEAD = [
   { id: 'itemName', label: 'Item Name' },
   { id: 'requestDate', label: 'Request Date' },
   { id: 'quantity', label: 'Quantity' },
-  {id: 'parLevel', label: 'Par Level'},
+  { id: 'parLevel', label: 'Par Level' },
   { id: 'status', label: 'Status' },
   { id: '', label: 'Action' },
 ];
@@ -73,7 +73,7 @@ export default function InvoiceListViewEdit() {
 
   const settings = useSettingsContext();
 
-  const invoices = CLEANING_TASKS;
+  const invoices = INVENTORY_LIST;
 
   // console.log(invoices);
 
@@ -120,7 +120,8 @@ export default function InvoiceListViewEdit() {
 
   // const getInvoiceLength = () => tableData.length;
   const getOutLength = () => tableData.filter((item) => item.quantity <= 0).length;
-  const getLowLength = () => tableData.filter((item) => (item.quantity <= item.parLevel) && (item.quantity > 0)).length;
+  const getLowLength = () =>
+    tableData.filter((item) => item.quantity <= item.parLevel && item.quantity > 0).length;
   const getInStockLength = () => tableData.filter((item) => item.quantity > item.parLevel).length;
 
   const getTotalAmount = (status) =>
@@ -412,12 +413,13 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   }
 
   if (status !== 'all') {
-    if(status === 'Out of Stock'){
-      inputData = (() => inputData.filter((item) => item.quantity <= 0))()
-    }else if(status === 'Low Stock'){
-      inputData = (() => inputData.filter((item) => (item.quantity <= item.parLevel) && (item.quantity > 0)))()
-    }else if(status === 'In Stock'){
-      inputData = (() => inputData.filter((item) => item.quantity > item.parLevel))()
+    if (status === 'Out of Stock') {
+      inputData = (() => inputData.filter((item) => item.quantity <= 0))();
+    } else if (status === 'Low Stock') {
+      inputData = (() =>
+        inputData.filter((item) => item.quantity <= item.parLevel && item.quantity > 0))();
+    } else if (status === 'In Stock') {
+      inputData = (() => inputData.filter((item) => item.quantity > item.parLevel))();
     }
   }
 

@@ -34,15 +34,6 @@ import InvoiceAnalytic from '../invoice-analytic';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'customerName', label: 'Customer Name' },
-  { id: 'status', label: 'Price (₦)', width: 170 },
-  { id: 'orderNumber', label: 'Booking ID', width: 200 },
-  { id: 'roomType', label: 'Room Type', width: 200 },
-  { id: 'roomNumber', label: 'Room Number', width: 150 },
-  { id: '', width: 100 },
-];
-
 const defaultFilters = {
   name: '',
   role: [],
@@ -241,10 +232,10 @@ export default function InventoryListView() {
   // });
 
   // Extract check-in dates
-  const checkInDates = bookings
+  const checkInDates = bookings;
   // remove comments
-    // .filter((booking) => booking.status === 'checkedIn')
-    // .flatMap((booking) => booking.rooms.map((room) => new Date(room.checkIn || booking.createdAt)));
+  // .filter((booking) => booking.status === 'checkedIn')
+  // .flatMap((booking) => booking.rooms.map((room) => new Date(room.checkIn || booking.createdAt)));
 
   // Calculate monthly averages
   const calculateMonthlyAverage = () => {
@@ -382,8 +373,8 @@ export default function InventoryListView() {
 
 function applyFilter({ inputData, comparator, filters }) {
   // remove the if statement
-  if(!inputData.lenght){
-    return []
+  if (!inputData.lenght) {
+    return [];
   }
   const { name, status } = filters;
 
