@@ -1,8 +1,8 @@
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
-import { useState, useCallback } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useState, useEffect, useCallback } from 'react';
 
 // Material UI Components
 import Box from '@mui/material/Box';
@@ -52,6 +52,15 @@ export default function UserNewEditForm({ maintenance }) {
   } = methods;
 
   const values = watch();
+
+    useEffect(()=>{
+     if(!values.issue && !values.room && assignee === maintenance.requestedBy && status === maintenance.status){
+      setEdited(false)
+    }else{
+      setEdited(true)
+    }
+  }, [values, assignee, status, maintenance.requestedBy, maintenance.status])
+
 
   const onSubmit = handleSubmit(async (data) => {
     handleSaveChanges()
@@ -193,6 +202,7 @@ export default function UserNewEditForm({ maintenance }) {
               variant="contained"
               color="primary"
               onClick={handleSaveChanges}
+              disabled={!edit}
             >
               {isSaving ? 'Saving...' : 'Save Changes'}
             </Button>

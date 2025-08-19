@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
-import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -36,6 +36,15 @@ export default function CleaningTaskEditForm({ inventory }) {
   const [isSaving, setIsSaving] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [edited, setEdited] = useState(false)
+
+    useEffect(()=>{
+       if( itemName === inventory.itemName && parLevel === inventory.parLevel && quantity === inventory.quantity){
+        setEdited(false)
+      }else{
+        setEdited(true)
+      }
+    }, [inventory.itemName, inventory.parLevel, inventory.quantity, itemName, parLevel, quantity])
+  
 
   const handleSaveChanges = () => {
     setIsSaving(false);
@@ -131,7 +140,7 @@ export default function CleaningTaskEditForm({ inventory }) {
               <Iconify icon="eva:save-fill" />
             )
           }
-          disabled={isSaving}
+          disabled={!edited || isSaving}
           sx={{ minWidth: 140 }}
         >
           {isSaving ? 'Saving...' : 'Save Changes'}
