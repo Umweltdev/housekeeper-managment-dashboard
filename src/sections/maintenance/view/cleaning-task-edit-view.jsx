@@ -1,7 +1,8 @@
-
+import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 import { useState, useCallback } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 // Material UI Components
 import Box from '@mui/material/Box';
@@ -19,19 +20,28 @@ import { useRouter } from 'src/routes/hooks';
 
 import { fData } from 'src/utils/format-number';
 
+import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
 
 import { CLEANING_TASKS } from './maintenance-tasks';
 
 export default function UserNewEditForm({ maintenance }) {
   const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
   const [assignee, setAssignee] = useState(maintenance.requestedBy || '')
   const [isSaving, setIsSaving] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [status, setStatus] = useState(maintenance.status || '')
+  const [edit, setEdited] = useState(false)
 
-  const methods = useForm({
-  });
+   const NewIssueSchema = Yup.object().shape({
+     room: Yup.string().required('Room/Area is required!'),
+     issue: Yup.string().required('Please attach the issue'),
+   });
+ 
+   const methods = useForm({
+     resolver: yupResolver(NewIssueSchema),
+   });
 
   const {
     reset,
@@ -40,6 +50,8 @@ export default function UserNewEditForm({ maintenance }) {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
+
+  const values = watch();
 
   const onSubmit = handleSubmit(async (data) => {
     handleSaveChanges()
@@ -60,7 +72,13 @@ export default function UserNewEditForm({ maintenance }) {
     [setValue]
   );
 
+  
+
   const handleSaveChanges = () => {
+    if(!values.issue && !values.room && assignee === maintenance.requestedBy && status === maintenance.status){
+      enqueueSnackbar('No changes were made!', { variant: 'error' });
+      return
+    }
     setIsSaving(true);
 
     setTimeout(() => {
@@ -104,10 +122,10 @@ export default function UserNewEditForm({ maintenance }) {
                 </TextField>
               </Grid>
               <Grid xs={12}>
-                <RHFTextField name="lastName" label={maintenance.itemName || "Room/Area"} fullWidth />
+                <RHFTextField name="room" label={maintenance.itemName || "Room/Area"} fullWidth />
               </Grid>
               <Grid xs={12}>
-                <RHFTextField name="lastName" label={maintenance.issue || "Maintenance Description"} fullWidth />
+                <RHFTextField name="issue" label={maintenance.issue || "Maintenance Description"} fullWidth />
               </Grid>
               <Grid xs={12}>
                 <TextField

@@ -35,13 +35,18 @@ export default function CleaningTaskEditForm({ inventory }) {
   const [quantity, setQuantity] = useState(inventory.quantity || 0);
   const [isSaving, setIsSaving] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [edited, setEdited] = useState(false)
 
   const handleSaveChanges = () => {
+    setIsSaving(false);
+      setOpenSnackbar(true);
+    if(!edited){
+      // console.log('edit something!')
+      return
+    }
     setIsSaving(true);
 
     setTimeout(() => {
-      setIsSaving(false);
-      setOpenSnackbar(true);
 
       setTimeout(() => {
         router('/dashboard/inventory');
@@ -140,8 +145,8 @@ export default function CleaningTaskEditForm({ inventory }) {
         onClose={() => setOpenSnackbar(false)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
-          Changes saved successfully!
+        <Alert onClose={() => setOpenSnackbar(false)} severity={edited ? 'success' : "error"} sx={{ width: '100%' }}>
+          {edited ? 'Changes saved successfully!' : 'No changes were made!'}
         </Alert>
       </Snackbar>
     </Box>

@@ -315,7 +315,7 @@ export default function InventoryListView() {
           gap={2}
         >
           <InvoiceAnalytic
-            title="Total Items"
+            title="Total Request"
             total={200}
             percent={5}
             price={0}
