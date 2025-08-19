@@ -20,7 +20,8 @@ import { useRouter } from 'src/routes/hooks';
 import { useBoolean } from 'src/hooks/use-boolean';
 
 import { useGetRooms } from 'src/api/room';
-import { useGetRoomType } from 'src/api/roomType';
+import { useGetRoomTypes } from 'src/api/roomType';
+
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -53,22 +54,22 @@ export default function RoomTableView() {
   const confirm = useBoolean();
 
   const { rooms } = useGetRooms();
-  const { roomType } = useGetRoomType();
+  const { roomTypes } = useGetRoomTypes();
 
   const [tableData, setTableData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
 
   useEffect(() => {
-    if (rooms && roomType) {
-      const updatedRoomType = roomType.map((type) => {
+    if (rooms && roomTypes) {
+      const updatedRoomType = roomTypes.map((type) => {
         const roomsForType = rooms.filter((room) => room.roomType === type._id);
         const roomsAvailable = roomsForType.length;
         return { ...type, roomsAvailable };
       });
       setTableData(updatedRoomType);
     }
-  }, [rooms, roomType]);
+  }, [rooms, roomTypes]);
 
   // Filter data based on search query and selected filter
   const filteredData = tableData.filter((row) => {
@@ -130,7 +131,7 @@ export default function RoomTableView() {
               sx={{ width: 300 }}
             >
               <MenuItem value="all">All</MenuItem>
-              {roomType.map((type) => (
+              {roomTypes.map((type) => (
                 <MenuItem key={type._id} value={type._id}>
                   {type.title}
                 </MenuItem>

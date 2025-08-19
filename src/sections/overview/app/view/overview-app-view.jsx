@@ -16,7 +16,7 @@ import { fetcher, endpoints } from 'src/utils/axios';
 import { useGetRooms } from 'src/api/room';
 import { useGetUsers } from 'src/api/user';
 import { useGetBookings } from 'src/api/booking';
-import { useGetRoomType } from 'src/api/roomType';
+import {  useGetRoomTypes } from 'src/api/roomType';
 
 import AppWelcome from '../app-welcome';
 import AppFeatured from '../app-featured';
@@ -40,7 +40,7 @@ export default function OverviewAppView() {
   const { users } = useGetUsers();
   const { bookings } = useGetBookings();
   const { rooms } = useGetRooms();
-  const { roomType } = useGetRoomType();
+  const { roomTypes } = useGetRoomTypes();
 
   console.log(rooms);
 
@@ -96,9 +96,9 @@ export default function OverviewAppView() {
   }, []);
 
   useEffect(() => {
-    if (Array.isArray(rooms) && Array.isArray(roomType)) {
+    if (Array.isArray(rooms) && Array.isArray(roomTypes)) {
       // Create a map of roomType IDs to titles
-      const roomTypeMap = roomType.reduce((acc, type) => {
+      const roomTypeMap = roomTypes.reduce((acc, type) => {
         acc[type._id] = type.title; // Assuming roomType objects have _id and title
         return acc;
       }, {});
@@ -118,7 +118,7 @@ export default function OverviewAppView() {
 
       setRoomData(transformedData);
     }
-  }, [rooms, roomType]);
+  }, [rooms, roomTypes]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'xl'}>

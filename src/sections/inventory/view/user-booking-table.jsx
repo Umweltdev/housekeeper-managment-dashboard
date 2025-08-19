@@ -37,6 +37,7 @@ import {
 function UserBookingTable({ id }) {
   const { user: currentUser } = useGetUser(id);
   const { bookings } = useGetBookings();
+  
   const { floor } = useGetFloors();
   const { cancelBooking } = useCancelBooking();
   const { checkoutBooking } = useCheckoutBooking();

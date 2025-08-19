@@ -1,23 +1,22 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
-
+import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   Box,
   Grid,
-  Chip,
   Paper,
   Stack,
   Alert,
   Button,
   Divider,
   MenuItem,
-  Snackbar,
   TextField,
   Typography,
   CircularProgress,
+  IconButton,
+  Snackbar,
 } from '@mui/material';
-
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
@@ -34,34 +33,79 @@ const PRIORITY_COLORS = {
   High: 'error',
 };
 
-const ROOM_CATEGORIES = ['Standard', 'Deluxe', 'Suite'];
-const ASSIGNEES = ['John Doe', 'Jane Smith', 'Alex Brown'];
-const TASK_TYPES = ['cleaning', 'maintenance', 'inspection'];
-
 export default function CleaningTaskEditForm({ task }) {
-  const router = useNavigate();
+  const navigate = useNavigate();
+  const { state } = useLocation();
+  const {
+    roomCategories = ['Standard', 'Deluxe', 'Suite'],
+    assignees = ['John Doe', 'Jane Smith', 'Alex Brown'],
+  } = state || {};
 
-  const [issues, setIssues] = useState(task.maintenanceAndDamages || []);
-  const [status, setStatus] = useState(task.status);
-  const [category, setCategory] = useState(task.category);
-  const [dueDate, setDueDate] = useState(task.dueDate);
-  const [assignedTo, setAssignedTo] = useState(task.assignedTo);
-  const [taskType, setTaskType] = useState(task.type);
-  const [priority, setPriority] = useState(task.priority);
+  const [status, setStatus] = useState(task.status || 'dirty');
+  const [category, setCategory] = useState(task.category || '');
+  const [dueDate, setDueDate] = useState(task.dueDate || '');
+  const [assignedTo, setAssignedTo] = useState(task.assignedTo || '');
+  const [priority, setPriority] = useState(task.priority || 'Medium');
+  const [description, setDescription] = useState(task.description || '');
   const [isSaving, setIsSaving] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [error, setError] = useState(null);
+  const [newIssue, setNewIssue] = useState('');
+  const [newIssuePriority, setNewIssuePriority] = useState('Medium');
+  const [issues, setIssues] = useState(task.maintenanceAndDamages || []);
 
-  const handleSaveChanges = () => {
+  const handleAddIssue = () => {
+    if (newIssue.trim()) {
+      setIssues([
+        ...issues,
+        {
+          issue: newIssue,
+          issuePriority: newIssuePriority.toLowerCase(),
+          reportedAt: new Date().toISOString(),
+        },
+      ]);
+      setNewIssue('');
+      setNewIssuePriority('Medium');
+    }
+  };
+
+  const handleRemoveIssue = (index) => {
+    setIssues(issues.filter((_, i) => i !== index));
+  };
+
+  const handleSaveChanges = async () => {
     setIsSaving(true);
+    setError(null);
 
-    setTimeout(() => {
+    try {
+      const updatedTask = {
+        status: {
+          statusType: status,
+          description,
+          maintenanceAndDamages: issues,
+          detailedIssues: task.detailedIssues || [],
+        },
+        roomId: task.roomId || task.room || '',
+        housekeeperId: assignedTo || null,
+        dueDate: dueDate ? new Date(dueDate).toISOString() : null,
+        priority: priority.toLowerCase(),
+        roomType: { title: category },
+      };
+
+      const response = await axios.patch(`/api/tasks/${task.id}`, updatedTask);
+      if (response.data.success) {
+        setOpenSnackbar(true);
+        setTimeout(() => {
+          navigate('/dashboard/task');
+        }, 1500);
+      } else {
+        setError(response.data.error || 'Failed to save task');
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to save task');
+    } finally {
       setIsSaving(false);
-      setOpenSnackbar(true);
-
-      setTimeout(() => {
-        router('/dashboard/task');
-      }, 1500);
-    }, 1500);
+    }
   };
 
   return (
@@ -72,7 +116,7 @@ export default function CleaningTaskEditForm({ task }) {
           <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
             <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
               <Typography variant="h6" component="h2">
-                Room #{task.room}
+                Room #{task.room || 'Unknown'}
               </Typography>
 
               <Label
@@ -103,16 +147,18 @@ export default function CleaningTaskEditForm({ task }) {
                 onChange={(e) => setCategory(e.target.value)}
                 fullWidth
               >
-                {ROOM_CATEGORIES.map((cat) => (
+                {roomCategories.map((cat) => (
                   <MenuItem key={cat} value={cat}>
                     {cat}
                   </MenuItem>
                 ))}
               </TextField>
 
+              {/* Description */}
               <TextField
                 label="Description"
-                value={task.description}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 multiline
                 rows={3}
                 fullWidth
@@ -136,7 +182,8 @@ export default function CleaningTaskEditForm({ task }) {
                 onChange={(e) => setAssignedTo(e.target.value)}
                 fullWidth
               >
-                {ASSIGNEES.map((name) => (
+                <MenuItem value="">None</MenuItem>
+                {assignees.map((name) => (
                   <MenuItem key={name} value={name}>
                     {name}
                   </MenuItem>
@@ -172,10 +219,95 @@ export default function CleaningTaskEditForm({ task }) {
                   </MenuItem>
                 ))}
               </TextField>
+
+              {/* Maintenance and Damages */}
+              <Typography variant="subtitle1" sx={{ mt: 2 }}>
+                Maintenance and Damages
+              </Typography>
+              <Stack spacing={1}>
+                {issues.map((issue, index) => (
+                  <Stack key={index} direction="row" alignItems="center" spacing={2}>
+                    <TextField
+                      label="Issue"
+                      value={issue.issue}
+                      onChange={(e) =>
+                        setIssues(
+                          issues.map((item, i) =>
+                            i === index ? { ...item, issue: e.target.value } : item
+                          )
+                        )
+                      }
+                      fullWidth
+                    />
+                    <TextField
+                      select
+                      label="Priority"
+                      value={
+                        issue.issuePriority.charAt(0).toUpperCase() + issue.issuePriority.slice(1)
+                      }
+                      onChange={(e) =>
+                        setIssues(
+                          issues.map((item, i) =>
+                            i === index
+                              ? { ...item, issuePriority: e.target.value.toLowerCase() }
+                              : item
+                          )
+                        )
+                      }
+                      sx={{ minWidth: 120 }}
+                    >
+                      {MAINTENANCE_PRIORITIES.map((p) => (
+                        <MenuItem key={p} value={p}>
+                          {p}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                    <IconButton color="error" onClick={() => handleRemoveIssue(index)}>
+                      <Iconify icon="solar:trash-bin-trash-bold" />
+                    </IconButton>
+                  </Stack>
+                ))}
+                <Stack direction="row" alignItems="center" spacing={2}>
+                  <TextField
+                    label="New Issue"
+                    value={newIssue}
+                    onChange={(e) => setNewIssue(e.target.value)}
+                    fullWidth
+                  />
+                  <TextField
+                    select
+                    label="Priority"
+                    value={newIssuePriority}
+                    onChange={(e) => setNewIssuePriority(e.target.value)}
+                    sx={{ minWidth: 120 }}
+                  >
+                    {MAINTENANCE_PRIORITIES.map((p) => (
+                      <MenuItem key={p} value={p}>
+                        {p}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleAddIssue}
+                    disabled={!newIssue.trim()}
+                  >
+                    Add
+                  </Button>
+                </Stack>
+              </Stack>
             </Stack>
           </Paper>
         </Grid>
       </Grid>
+
+      {/* Error Alert */}
+      {error && (
+        <Alert severity="error" sx={{ mt: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       {/* Footer */}
       <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
@@ -183,7 +315,7 @@ export default function CleaningTaskEditForm({ task }) {
           variant="outlined"
           color="inherit"
           startIcon={<Iconify icon="eva:close-fill" />}
-          onClick={() => router('/dashboard/task')}
+          onClick={() => navigate('/dashboard/task')}
           disabled={isSaving}
         >
           Cancel
@@ -228,17 +360,17 @@ CleaningTaskEditForm.propTypes = {
     category: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     dueDate: PropTypes.string.isRequired,
-    assignedTo: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
+    assignedTo: PropTypes.string,
     priority: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     maintenanceAndDamages: PropTypes.arrayOf(
       PropTypes.shape({
-        id: PropTypes.string,
-        description: PropTypes.string,
-        priority: PropTypes.string,
-        date: PropTypes.string,
+        issue: PropTypes.string.isRequired,
+        issuePriority: PropTypes.string.isRequired,
+        reportedAt: PropTypes.string,
       })
     ),
+    roomId: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+    detailedIssues: PropTypes.array,
   }).isRequired,
 };

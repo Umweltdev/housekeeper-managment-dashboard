@@ -27,7 +27,7 @@ import { formatNairaAmountLong } from 'src/utils/format-naira-short';
 
 import { useGetUser } from 'src/api/user';
 import { useGetFloors } from 'src/api/floor';
-import { useGetRoomType } from 'src/api/roomType';
+import { useGetRoomTypes } from 'src/api/roomType';
 import {
   useExtendStay,
   useGetBookings,
@@ -38,13 +38,13 @@ import {
 function UserBookingTable({ id }) {
   const { user: currentUser } = useGetUser(id);
   const { bookings } = useGetBookings();
-  const { roomType } = useGetRoomType();
+  const { roomTypes } = useGetRoomTypes();
   const { floor } = useGetFloors();
   const { cancelBooking } = useCancelBooking();
   const { checkoutBooking } = useCheckoutBooking();
   const { extendStay } = useExtendStay();
 
-  console.log('FLOOR TYPE:', floor);
+  // console.log('FLOOR TYPE:', floor);
 
   const [loadingBookingId, setLoadingBookingId] = useState(null);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -63,21 +63,7 @@ function UserBookingTable({ id }) {
     setExpandedRow((prev) => (prev === rowId ? null : rowId));
   };
 
-  // Create a map of roomType by id for fast lookup
-  // const roomTypeMap = roomType?.reduce((map, room) => {
-  //   map[room._id] = room.title;
-  //   return map;
-  // }, {});
-
-  const roomTypeMap = useMemo(
-    () =>
-      roomType?.reduce((map, room) => {
-        map[room._id] = room.title;
-        return map;
-      }, {}),
-    [roomType]
-  );
-
+ 
   useEffect(() => {
     if (currentUser?.email && bookings?.length) {
       const filtered = bookings.filter((booking) => booking.customer?.email === currentUser.email);

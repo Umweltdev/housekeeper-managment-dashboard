@@ -1,69 +1,69 @@
-/* eslint-disable perfectionist/sort-imports */
 import PropTypes from 'prop-types';
-
+import { useLocation } from 'react-router-dom';
 import Container from '@mui/material/Container';
-
 import { paths } from 'src/routes/paths';
-
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-import { useGetUser } from 'src/api/user';
-import { useGetBooking } from 'src/api/booking';
-import { CLEANING_TASKS } from './cleaning-tasks';
+import { useGetTask } from 'src/api/task';
+import CleaningTaskEditForm from '../cleaning-task-new-edit-form';
 
-import CleaningTaskEditForm from './cleaning-task-edit-view';
-// import { get } from 'lodash';
-
-// ----------------------------------------------------------------------
+// Transformation function to match CleaningTaskEditForm PropTypes
+const transformTaskForEdit = (task) => ({
+  id: task?._id || '',
+  room: task?.roomId?.roomNumber?.toString() || task?.roomId?.toString() || 'Unknown',
+  category: task?.roomId?.roomType?.title || task?.roomId?.roomType || 'Unknown', // Handle roomType as ID or object
+  description: task?.status?.description || '',
+  dueDate: task?.dueDate || '',
+  assignedTo: task?.housekeeperId?._id || task?.housekeeperId?.toString() || '', // Use _id for housekeeper
+  priority: task?.priority
+    ? task.priority.charAt(0).toUpperCase() + task.priority.slice(1)
+    : 'Medium',
+  status: task?.status?.statusType || 'dirty',
+  maintenanceAndDamages: task?.status?.maintenanceAndDamages || [],
+  roomId: task?.roomId?._id || task?.roomId?.toString() || 'Unknown', // Handle roomId as object or string
+  detailedIssues: task?.status?.detailedIssues || [],
+});
 
 export default function TaskEditView({ id }) {
   const settings = useSettingsContext();
-  const { booking } = useGetBooking(id);
-  const { user } = useGetUser(id);
+  const { state } = useLocation();
+  const { task: rawTask } = state || {};
+  const { task: fetchedTask, taskLoading, taskError } = useGetTask(id);
 
-  const task = CLEANING_TASKS.find((t) => t.id.toString() === id);
-  console.log(booking);
+  console.log('FETCHED_TASK', fetchedTask);
+  console.log('RAW_TASK', rawTask);
 
-  // const getUserDetails = async (userId) => {
-  //   try {
-  //     const response = await axiosInstance.get(`/api/user/${userId}`);
-  //     setCurrentUser(response.data);
-  //     // console.info('DATA', response.data);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+  // Refactor nested ternary into if statements
+  let task = null;
+  if (rawTask) {
+    task = transformTaskForEdit(rawTask);
+  } else if (fetchedTask) {
+    task = transformTaskForEdit(fetchedTask);
+  }
 
-  // useEffect(() => {
-  //   getUserDetails(id);
-  // }, [id]);
+  console.log('TASK_EDIT_VIEW_TASK', task);
+
+  if (taskLoading) return <Container>Loading...</Container>;
+  if (taskError || !task) {
+    return <Container>Error loading task: {taskError?.message || 'Task not found'}</Container>;
+  }
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
         heading="Task Update"
         links={[
-          {
-            name: 'Dashboard',
-            href: paths.dashboard.root,
-          },
-          {
-            name: 'Task List',
-            href: paths.dashboard.task.root,
-          },
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Task List', href: paths.dashboard.task.root },
           { name: 'Task Update' },
         ]}
-        sx={{
-          mb: { xs: 3, md: 5 },
-        }}
+        sx={{ mb: { xs: 3, md: 5 } }}
       />
-
-      {/* <UserNewEditForm currentUser={booking} /> */}
       <CleaningTaskEditForm task={task} />
     </Container>
   );
 }
 
 TaskEditView.propTypes = {
-  id: PropTypes.string,
+  id: PropTypes.string.isRequired,
 };

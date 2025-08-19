@@ -75,10 +75,8 @@ export default function InventoryListView() {
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-  const { bookings, refreshBookings } = useGetBookings([]);
+  const { bookings, refreshBookings } = useGetBookings();
   const [tableData, setTableData] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState('all');
-  const [selectedTimeframe, setSelectedTimeframe] = useState('month');
   const theme = useTheme();
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -159,112 +157,6 @@ export default function InventoryListView() {
     return Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
   };
 
-  const getWeekNumber = (date) => {
-    const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
-    d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-    const yearStart = new Date(d.getFullYear(), 0, 1);
-    return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
-  };
-
-  // Initialize data structures
-  const monthlyGuests = {};
-  const weeklyGuests = {};
-  const dailyGuests = {};
-  const leadTimeData = [];
-  const lengthOfStayData = [];
-
-  const calculateAverageCheckinTime = () => {
-    if (checkInDates.length === 0) return 'No data';
-
-    // Filter by selected month if needed
-    const filteredDates =
-      selectedMonth === 'all'
-        ? checkInDates
-        : checkInDates.filter((date) => date.getMonth() + 1 === Number(selectedMonth));
-
-    if (filteredDates.length === 0) return 'No data';
-
-    // Calculate average hour
-    const totalHours = filteredDates.reduce((sum, date) => sum + date.getHours(), 0);
-    const avgHour = Math.round(totalHours / filteredDates.length);
-
-    // Format as time (e.g., "2:30 PM")
-    const avgDate = new Date();
-    avgDate.setHours(avgHour, 0, 0, 0);
-    return avgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
-
-  const calculateHourlyCheckinDistribution = () => {
-    const hourlyCounts = Array(24).fill(0);
-
-    checkInDates.forEach((date) => {
-      const hour = date.getHours();
-      hourlyCounts[hour]++;
-    });
-
-    // Normalize to percentage for chart
-    const maxCount = Math.max(...hourlyCounts);
-    return hourlyCounts.map((count) => (maxCount ? Math.round((count / maxCount) * 100) : 0));
-  };
-
-  // Process bookings data
-  // Remove if statement here
-  //   bookings.forEach((booking) => {
-  //   booking.rooms.forEach((room) => {
-  //     const lengthOfStay = calculateDaysDifference(room.checkOut, room.checkIn);
-  //     lengthOfStayData.push(lengthOfStay);
-
-  //     const leadTime = calculateDaysDifference(room.checkIn, booking.createdAt);
-  //     leadTimeData.push(leadTime);
-
-  //     const checkInDate = new Date(room.checkIn);
-  //     const monthKey = `${checkInDate.getFullYear()}-${checkInDate.getMonth() + 1}`;
-  //     const weekKey = `${checkInDate.getFullYear()}-W${getWeekNumber(checkInDate)}`;
-  //     const dayKey = `${checkInDate.getFullYear()}-${
-  //       checkInDate.getMonth() + 1
-  //     }-${checkInDate.getDate()}`;
-
-  //     monthlyGuests[monthKey] = (monthlyGuests[monthKey] || 0) + 1;
-  //     weeklyGuests[weekKey] = (weeklyGuests[weekKey] || 0) + 1;
-  //     dailyGuests[dayKey] = (dailyGuests[dayKey] || 0) + 1;
-  //   });
-  // });
-
-  // Extract check-in dates
-  const checkInDates = bookings;
-  // remove comments
-  // .filter((booking) => booking.status === 'checkedIn')
-  // .flatMap((booking) => booking.rooms.map((room) => new Date(room.checkIn || booking.createdAt)));
-
-  // Calculate monthly averages
-  const calculateMonthlyAverage = () => {
-    if (checkInDates.length === 0) return 0;
-
-    const filteredDates =
-      selectedMonth === 'all'
-        ? checkInDates
-        : checkInDates.filter((date) => date.getMonth() + 1 === Number(selectedMonth));
-
-    if (filteredDates.length === 0) return 0;
-
-    const minDate = new Date(Math.min(...filteredDates));
-    const maxDate = new Date(Math.max(...filteredDates));
-    const totalDays = (maxDate - minDate) / (1000 * 60 * 60 * 24) || 1;
-
-    return (filteredDates.length / totalDays).toFixed(2);
-  };
-
-  const averageCheckInsPerDay = calculateMonthlyAverage();
-  const averageCheckInsPerHour =
-    checkInDates.length > 0 ? (averageCheckInsPerDay / 24).toFixed(2) : 0;
-
-  const guestChartData = {
-    month: Object.values(monthlyGuests),
-    week: Object.values(weeklyGuests),
-    day: Object.values(dailyGuests),
-  };
-
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -291,9 +183,9 @@ export default function InventoryListView() {
             variant="contained"
             color="primary"
             startIcon={<Iconify icon="material-symbols:add-box" />}
-            onClick={() => router.push('/dashboard/inventory/new')}
+            onClick={() => router.push('/dashboard/inventory/request')}
           >
-            New Inventory
+            Request Inventory
           </Button>
         </Stack>
         <Stack
@@ -306,39 +198,31 @@ export default function InventoryListView() {
           gap={2}
         >
           <InvoiceAnalytic
-            title="Total Items"
-            total={200}
-            percent={5}
-            price={0}
+            title="Requested"
+            total={10}
             icon="tdesign:task"
             color={theme.palette.info.main}
           />
 
           <InvoiceAnalytic
-            title="In Stock"
-            total={150}
-            percent={50}
-            price={0}
+            title="Approved"
+            total={50}
             icon="ic:round-check-circle"
             color={theme.palette.success.main}
           />
 
           <InvoiceAnalytic
-            title="Low Stock"
-            total={40}
-            percent={15}
-            price={0}
+            title="Rejected"
+            total={5}
             icon="material-symbols:cancel"
-            color={theme.palette.warning.main}
+            color={theme.palette.error.main}
           />
 
           <InvoiceAnalytic
-            title="Out of Stock"
-            total={10}
-            percent={10}
-            price={0}
+            title="Received"
+            total={6}
             icon="ph:package-bold"
-            color={theme.palette.error.main}
+            color={theme.palette.warning.main}
           />
         </Stack>
         {/* </Card> */}
