@@ -39,10 +39,10 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import { CLEANING_TASKS } from './cleaning-tasks';
-import InvoiceTableToolbar from './invoice-table-toolbar';
-import RequestInventoryTableRow from './request-inventory-edit-row';
-import InvoiceTableFiltersResult from './invoice-table-filters-result';
+import { INVENTORY_LIST } from './inventory-item';
+import InvoiceTableToolbar from './inventory-table-toolbar';
+import CleaningTaskTableRow from './cleaning-task-edit-row';
+import InvoiceTableFiltersResult from './inventory-table-filters-result';
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
@@ -51,11 +51,9 @@ const TABLE_HEAD = [
   { id: 'itemName', label: 'Item Name' },
   { id: 'requestDate', label: 'Request Date' },
   { id: 'quantity', label: 'Quantity' },
-  {id: 'parLevel', label: 'Quantity Requested'},
-  {id: 'requestedBy', label: 'RequestedBy'},
+  { id: 'parLevel', label: 'Par Level' },
   { id: 'status', label: 'Status' },
   { id: '', label: 'Action' },
-  {id: 'reject', label: ''}
 ];
 
 const defaultFilters = {
@@ -75,7 +73,7 @@ export default function InvoiceListViewEdit() {
 
   const settings = useSettingsContext();
 
-  const invoices = CLEANING_TASKS;
+  const invoices = INVENTORY_LIST;
 
   // console.log(invoices);
 
@@ -120,7 +118,11 @@ export default function InvoiceListViewEdit() {
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
-  const getInvoiceLength = (status) => tableData.filter((item) => item.status === status).length;
+  // const getInvoiceLength = () => tableData.length;
+  const getOutLength = () => tableData.filter((item) => item.quantity <= 0).length;
+  const getLowLength = () =>
+    tableData.filter((item) => item.quantity <= item.parLevel && item.quantity > 0).length;
+  const getInStockLength = () => tableData.filter((item) => item.quantity > item.parLevel).length;
 
   const getTotalAmount = (status) =>
     sumBy(
@@ -131,23 +133,29 @@ export default function InvoiceListViewEdit() {
   const TABS = [
     { value: 'all', label: 'All Items', color: 'default', count: tableData.length },
     {
-      value: 'Approved',
-      label: 'Approved',
+      value: 'In Stock',
+      label: 'In Stock',
       color: 'success',
-      count: getInvoiceLength('Approved'),
+      count: getInStockLength(),
     },
     {
-      value: 'Requested',
-      label: 'Pending',
+      value: 'Low Stock',
+      label: 'Low Stock',
       color: 'warning',
-      count: getInvoiceLength('Requested'),
+      count: getLowLength(),
     },
     {
-      value: 'Rejected',
-      label: 'Rejected',
+      value: 'Out of Stock',
+      label: 'Out of Stock',
       color: 'error',
-      count: getInvoiceLength('Rejected'),
+      count: getOutLength(),
     },
+    // {
+    //   value: 'Received',
+    //   label: 'Out of Stock',
+    //   color: 'info',
+    //   count: getOutLength(),
+    // },
   ];
 
   const handleFilters = useCallback(
@@ -323,7 +331,7 @@ export default function InvoiceListViewEdit() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
-                    <RequestInventoryTableRow
+                    <CleaningTaskTableRow
                       key={row.id}
                       row={row}
                       selected={table.selected.includes(row.id)}
@@ -405,7 +413,14 @@ function applyFilter({ inputData, comparator, filters, dateError }) {
   }
 
   if (status !== 'all') {
-    inputData = inputData.filter((invoice) => invoice.status === status);
+    if (status === 'Out of Stock') {
+      inputData = (() => inputData.filter((item) => item.quantity <= 0))();
+    } else if (status === 'Low Stock') {
+      inputData = (() =>
+        inputData.filter((item) => item.quantity <= item.parLevel && item.quantity > 0))();
+    } else if (status === 'In Stock') {
+      inputData = (() => inputData.filter((item) => item.quantity > item.parLevel))();
+    }
   }
 
   if (service.length) {

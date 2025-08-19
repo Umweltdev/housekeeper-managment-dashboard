@@ -8,7 +8,7 @@ import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { useGetUser } from 'src/api/user';
-import { INVENTORY_LIST } from './cleaning-tasks';
+import { INVENTORY_LIST } from './inventory-item';
 
 import CleaningTaskEditForm from './cleaning-task-edit-view';
 // import { get } from 'lodash';
@@ -19,7 +19,7 @@ export default function TaskEditView({ id }) {
   const settings = useSettingsContext();
   const { user } = useGetUser(id);
 
-  const task = INVENTORY_LIST.find((t) => t.id.toString() === id);
+  const inventory = INVENTORY_LIST.find((t) => t.id.toString() === id);
 
   // const getUserDetails = async (userId) => {
   //   try {
@@ -56,7 +56,7 @@ export default function TaskEditView({ id }) {
       />
 
       {/* <UserNewEditForm currentUser={booking} /> */}
-      <CleaningTaskEditForm task={task} />
+      <CleaningTaskEditForm inventory={inventory} />
     </Container>
   );
 }

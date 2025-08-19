@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
-import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -27,21 +27,35 @@ const STATUS_COLORS = {
   'Low Stock': 'warning',
 };
 
-export default function CleaningTaskEditForm({ task }) {
+export default function CleaningTaskEditForm({ inventory }) {
   const router = useNavigate();
 
-  const [itemName, setItemName] = useState(task.itemName);
-  const [parLevel, setParLevel] = useState(task.parLevel || 0);
-  const [quantity, setQuantity] = useState(task.quantity || 0);
+  const [itemName, setItemName] = useState(inventory.itemName || '');
+  const [parLevel, setParLevel] = useState(inventory.parLevel || 0);
+  const [quantity, setQuantity] = useState(inventory.quantity || 0);
   const [isSaving, setIsSaving] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [edited, setEdited] = useState(false)
+
+    useEffect(()=>{
+       if( itemName === inventory.itemName && parLevel === inventory.parLevel && quantity === inventory.quantity){
+        setEdited(false)
+      }else{
+        setEdited(true)
+      }
+    }, [inventory.itemName, inventory.parLevel, inventory.quantity, itemName, parLevel, quantity])
+  
 
   const handleSaveChanges = () => {
+    setIsSaving(false);
+      setOpenSnackbar(true);
+    if(!edited){
+      // console.log('edit something!')
+      return
+    }
     setIsSaving(true);
 
     setTimeout(() => {
-      setIsSaving(false);
-      setOpenSnackbar(true);
 
       setTimeout(() => {
         router('/dashboard/inventory');
@@ -56,14 +70,14 @@ export default function CleaningTaskEditForm({ task }) {
           <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
             <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
               <Typography variant="h6" component="h2">
-                Inventory: {task.itemName}
+                Inventory: {inventory.itemName}
               </Typography>{' '}
               <Label
                 variant="soft"
-                color={STATUS_COLORS[task.status] || 'default'}
+                color={STATUS_COLORS[inventory.status] || 'default'}
                 sx={{ textTransform: 'capitalize' }}
               >
-                {task.status}
+                {inventory.status}
               </Label>
             </Stack>
 
@@ -86,7 +100,7 @@ export default function CleaningTaskEditForm({ task }) {
                   onChange={(e) => setParLevel(Number(e.target.value))}
                   fullWidth
                 />
-                <Chip label={task.parLevel} color="info" size="small" variant="soft" />
+                <Chip label={inventory.parLevel} color="info" size="small" variant="soft" />
               </Stack>
               {/* Quantity */}
               <Stack direction="row" alignItems="center" spacing={1}>
@@ -97,7 +111,7 @@ export default function CleaningTaskEditForm({ task }) {
                   onChange={(e) => setQuantity(Number(e.target.value))}
                   fullWidth
                 />
-                <Chip label={task.quantity} color="primary" size="small" variant="soft" />
+                <Chip label={inventory.quantity} color="primary" size="small" variant="soft" />
               </Stack>
             </Stack>
           </Paper>
@@ -126,7 +140,7 @@ export default function CleaningTaskEditForm({ task }) {
               <Iconify icon="eva:save-fill" />
             )
           }
-          disabled={isSaving}
+          disabled={!edited || isSaving}
           sx={{ minWidth: 140 }}
         >
           {isSaving ? 'Saving...' : 'Save Changes'}
@@ -140,8 +154,8 @@ export default function CleaningTaskEditForm({ task }) {
         onClose={() => setOpenSnackbar(false)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
-          Changes saved successfully!
+        <Alert onClose={() => setOpenSnackbar(false)} severity={edited ? 'success' : "error"} sx={{ width: '100%' }}>
+          {edited ? 'Changes saved successfully!' : 'No changes were made!'}
         </Alert>
       </Snackbar>
     </Box>
@@ -149,7 +163,7 @@ export default function CleaningTaskEditForm({ task }) {
 }
 
 CleaningTaskEditForm.propTypes = {
-  task: PropTypes.shape({
+  inventory: PropTypes.shape({
     id: PropTypes.string.isRequired,
     itemName: PropTypes.string.isRequired,
     requestDate: PropTypes.string,

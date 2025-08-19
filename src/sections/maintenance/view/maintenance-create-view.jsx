@@ -5,7 +5,7 @@ import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import UserNewEditForm from '../user-new-edit-form';
+import UserNewEditForm from '../maintenance-new-form';
 
 // ----------------------------------------------------------------------
 
@@ -15,17 +15,17 @@ export default function UserCreateView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create a new user"
+        heading="New Maintenance Request"
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'User',
-            href: paths.dashboard.user.root,
+            name: 'Maintenance',
+            href: paths.dashboard.maintenance.root,
           },
-          { name: 'New user' },
+          { name: 'New Maintenance' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

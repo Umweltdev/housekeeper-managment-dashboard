@@ -25,8 +25,6 @@ import {
 import { fDate } from 'src/utils/format-time';
 import { formatNairaAmountLong } from 'src/utils/format-naira-short';
 
-import { useGetRoomTypes } from 'src/api/roomType';
-
 import { useGetUser } from 'src/api/user';
 import { useGetFloors } from 'src/api/floor';
 import {
@@ -39,7 +37,6 @@ import {
 function UserBookingTable({ id }) {
   const { user: currentUser } = useGetUser(id);
   const { bookings } = useGetBookings();
-  const { roomTypes } = useGetRoomTypes();
   const { floor } = useGetFloors();
   const { cancelBooking } = useCancelBooking();
   const { checkoutBooking } = useCheckoutBooking();

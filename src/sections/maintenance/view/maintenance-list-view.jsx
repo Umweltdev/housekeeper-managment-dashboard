@@ -29,7 +29,7 @@ import { useTable, getComparator } from 'src/components/table';
 
 import { useGetBookings } from 'src/api/booking';
 
-import InvoiceListViewEdit from './invoice-list-viewEdit';
+import InvoiceListViewEdit from './table-list-viewEdit';
 import InvoiceAnalytic from '../invoice-analytic';
 
 // ----------------------------------------------------------------------
@@ -315,7 +315,7 @@ export default function InventoryListView() {
           gap={2}
         >
           <InvoiceAnalytic
-            title="Total Items"
+            title="Total Request"
             total={200}
             percent={5}
             price={0}

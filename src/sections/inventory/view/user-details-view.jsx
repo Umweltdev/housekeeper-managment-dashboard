@@ -80,6 +80,11 @@ export default function UserDetailsView({ id }) {
       //   userId: id,
       //   ...formData,
       // });
+      const zeroData = formData.items.filter((item)=> item.quantity <= 0)
+      if(zeroData){
+        enqueueSnackbar('Quantity can not be zero', { variant: 'Error' });
+        return  
+      }
       enqueueSnackbar('Inventory request submitted successfully', { variant: 'success' });
       handleReset();
       setOpenInventoryDialog(false);

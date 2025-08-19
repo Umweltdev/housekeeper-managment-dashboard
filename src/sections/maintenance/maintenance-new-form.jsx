@@ -8,11 +8,7 @@ import { useMemo, useState, useEffect, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import Avatar from '@mui/material/Avatar';
+import { MenuItem } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Unstable_Grid2';
 import TextField from '@mui/material/TextField';
@@ -30,10 +26,8 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
 
-import { MenuItem } from '@mui/material';
-import CheckoutPage from './CheckoutPage';
 import makeToast from '../tour/assets/toaster';
-import { CLEANING_TASKS } from './view/cleaning-tasks';
+import { CLEANING_TASKS } from './view/maintenance-tasks';
 
 export default function UserNewEditForm({ currentUser }) {
   const router = useRouter();
@@ -42,49 +36,15 @@ export default function UserNewEditForm({ currentUser }) {
   const [roomDetails, setRoomDetails] = useState(null);
   const [additionalCharges, setAdditionalCharges] = useState(0);
   const [assignee, setAssignee] = useState('')
+  const [progress, setProgress] = useState('')
 
-  const NewUserSchema = Yup.object().shape({
-    firstName: Yup.string().required('First Name is required'),
-    lastName: Yup.string().required('Last Name is required'),
-    email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    phone: Yup.string().required('Phone number is required'),
-    country: Yup.string().required('Country is required'),
-    city: Yup.string().required('City is required'),
-    status: Yup.string()
-      .required('Status is required')
-      .oneOf(['Checked-Out', 'Checked-in', 'Reserved'], 'Invalid status'),
-    additionalCharges: Yup.number()
-      .typeError('Additional charges must be a number')
-      .min(0, 'Additional charges cannot be negative')
-      .nullable(),
+  const NewIssueSchema = Yup.object().shape({
+    room: Yup.string().required('Room/Area is required!'),
+    issue: Yup.string().required('Please attach the issue'),
   });
 
-  const defaultValues = useMemo(
-    () => ({
-      firstName: currentUser?.customer?.firstName || '',
-      lastName: currentUser?.customer?.lastName || '',
-      city: currentUser?.city || '',
-      email: currentUser?.customer?.email || '',
-      country: currentUser?.country || '',
-      img: currentUser?.customer?.img || null,
-      phone: currentUser?.customer?.phone || '',
-      status: currentUser?.status || 'Checked-Out',
-      rooms:
-        currentUser?.rooms?.map((room) => ({
-          roomNumber: room?.roomId?.roomNumber || '',
-          roomType: room?.roomId?.roomType?.title || '',
-          floor: room?.roomId?.floor || '',
-          amount: room?.roomId?.roomType?.price || '',
-          roomImg: room?.roomId?.roomType?.images[0] || null,
-        })) || [],
-      additionalCharges: '',
-    }),
-    [currentUser]
-  );
-
   const methods = useForm({
-    resolver: yupResolver(NewUserSchema),
-    defaultValues,
+    resolver: yupResolver(NewIssueSchema),
   });
 
   const {
@@ -97,52 +57,43 @@ export default function UserNewEditForm({ currentUser }) {
 
   const values = watch();
 
-  useEffect(() => {
-    if (currentUser) {
-      reset(defaultValues);
-    }
-  }, [currentUser, defaultValues, reset]);
-
-  const handleAdditionalChargesChange = (event) => {
-    setAdditionalCharges(event.target.value);
-  };
-
   const onSubmit = handleSubmit(async (data) => {
     const formData = new FormData();
     Object.keys(data).forEach((key) => {
       formData.append(key, data[key]);
     });
     try {
-      if (currentUser) {
-        await axiosInstance.put(`/api/user/${currentUser._id}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-      } else {
-        await axiosInstance.post(`/api/auth/register`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
+      if(!assignee){
+        enqueueSnackbar('Please assign task!', { variant: 'error' });
+        return
       }
+
+      if(!progress){
+        enqueueSnackbar('Please select progress', { variant: 'error' });
+        return
+      }
+      // if (currentUser) {
+      //   await axiosInstance.put(`/api/user/${currentUser._id}`, formData, {
+      //     headers: {
+      //       'Content-Type': 'multipart/form-data',
+      //     },
+      //   });
+      // } else {
+      //   await axiosInstance.post(`/api/auth/register`, formData, {
+      //     headers: {
+      //       'Content-Type': 'multipart/form-data',
+      //     },
+      //   });
+      // }
       reset();
       enqueueSnackbar(currentUser ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.user.root);
+      setTimeout(() => {
+        router.push(paths.dashboard.maintenance.root);
+      }, 1000);
     } catch (error) {
       console.error(error);
     }
   });
-
-  const onDelete = async () => {
-    try {
-      await axiosInstance.delete(`/api/user/${currentUser._id}`);
-      enqueueSnackbar('Deleted Successfully!');
-      router.push(paths.dashboard.user.root);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const handleDrop = useCallback(
     (acceptedFiles) => {
@@ -161,10 +112,7 @@ export default function UserNewEditForm({ currentUser }) {
 
   const handleCheckIn = async () => {
     try {
-      if (!currentUser?._id) {
-        console.log('error', 'No booking ID found.');
-        return;
-      }
+      
 
       await axiosInstance.put(`/api/booking/${currentUser._id}`, {
         status: 'checkedIn',
@@ -196,10 +144,6 @@ export default function UserNewEditForm({ currentUser }) {
         .split('T')[0],
     });
     setOpenCheckoutModal(true);
-  };
-
-  const handleCloseCheckoutModal = () => {
-    setOpenCheckoutModal(false);
   };
 
   const getStatusColor = (status) => {
@@ -249,67 +193,46 @@ export default function UserNewEditForm({ currentUser }) {
                   onChange={(e) => setAssignee(e.target.value)}
                 >
                   {
-                      [...new Set(CLEANING_TASKS.map(item => item.requestedBy))].map((name, idx) => (
-                          <MenuItem value={name} key={idx}>
-                          {name}
-                          </MenuItem>
-                      ))
+                    [...new Set(CLEANING_TASKS.map(item => item.requestedBy))].map((name, idx) => (
+                      <MenuItem value={name} key={idx}>
+                        {name}
+                      </MenuItem>
+                    ))
                   }
 
                 </TextField>
               </Grid>
               <Grid xs={12}>
-                <RHFTextField name="lastName" label="Room/Area" fullWidth />
+                <RHFTextField name="room" label="Room/Area" fullWidth />
               </Grid>
               <Grid xs={12}>
-                <RHFTextField name="lastName" label="Task Description" fullWidth />
+                <RHFTextField name="issue" label="Task Description" fullWidth />
               </Grid>
               <Grid xs={12}>
                 <TextField
                   select
                   fullWidth
                   label="Maintenance progress"
-                  value={assignee}
-                  onChange={(e) => setAssignee(e.target.value)}
+                  value={progress}
+                  onChange={(e) => setProgress(e.target.value)}
                 >
                   {
-                      [...new Set(CLEANING_TASKS.map(item => item.status))].map((name, idx) => (
-                          <MenuItem value={name} key={idx}>
-                          {name}
-                          </MenuItem>
-                      ))
+                    [...new Set(CLEANING_TASKS.map(item => item.status))].map((name, idx) => (
+                      <MenuItem value={name} key={idx}>
+                        {name}
+                      </MenuItem>
+                    ))
                   }
 
                 </TextField>
               </Grid>
             </Grid>
-
-            {currentUser && (
-              <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  onClick={onDelete}
-                  startIcon={<Iconify icon="eva:trash-2-outline" />}
-                >
-                  Delete
-                </Button>
-                <LoadingButton
-                  type="submit"
-                  variant="contained"
-                  loading={isSubmitting}
-                  startIcon={<Iconify icon="eva:save-fill" />}
-                >
-                  Save Changes
-                </LoadingButton>
-              </Stack>
-            )}
           </Card>
         </Grid>
 
         {/* Right Column - Room Details */}
         <Grid xs={12} md={6}>
-          <Card sx={{ p: 3 }}>
+          <Card sx={{ p: 3, height: '100%' }}>
             <Typography variant="h6" gutterBottom>
               Attach maintenance image
             </Typography>
@@ -340,11 +263,10 @@ export default function UserNewEditForm({ currentUser }) {
             <LoadingButton
               fullWidth
               size="large"
-              type="button"
+              type="submit"
               variant="contained"
               color="primary"
               loading={isSubmitting}
-              onClick={handleOpenCheckoutModal}
               startIcon={<Iconify icon="eva:checkmark-circle-2-outline" />}
             >
               Create Maintenance Request
@@ -352,21 +274,6 @@ export default function UserNewEditForm({ currentUser }) {
           </Card>
         </Grid>
       </Grid>
-
-      {/* Checkout Modal */}
-      <Dialog
-        open={openCheckoutModal}
-        onClose={handleCloseCheckoutModal}
-        maxWidth="md"
-        fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: 2,
-          },
-        }}
-      >
-        <CheckoutPage roomDetails={roomDetails} additionalCharges={additionalCharges} />
-      </Dialog>
     </FormProvider>
   );
 }

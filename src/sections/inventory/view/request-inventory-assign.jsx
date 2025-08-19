@@ -34,7 +34,7 @@ import Iconify from 'src/components/iconify';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
-import { CLEANING_TASKS } from './cleaning-tasks';
+import { CLEANING_TASKS } from './inventory-item';
 
 export default function RequestInventoryAssign({ id }) {
   const router = useRouter();

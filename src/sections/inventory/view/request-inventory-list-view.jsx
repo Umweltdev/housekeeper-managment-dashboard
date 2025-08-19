@@ -39,10 +39,10 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import { CLEANING_TASKS } from './cleaning-tasks';
-import InvoiceTableToolbar from './invoice-table-toolbar';
+import { CLEANING_TASKS } from './inventory-item';
+import InvoiceTableToolbar from './inventory-table-toolbar';
 import RequestInventoryTableRow from './request-inventory-edit-row';
-import InvoiceTableFiltersResult from './invoice-table-filters-result';
+import InvoiceTableFiltersResult from './inventory-table-filters-result';
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
@@ -53,7 +53,7 @@ const TABLE_HEAD = [
   { id: 'quantity', label: 'Quantity' },
   {id: 'parLevel', label: 'Quantity Requested'},
   {id: 'requestedBy', label: 'RequestedBy'},
-  { id: 'status', label: 'Status' },
+  // { id: 'status', label: 'Status' },
   { id: '', label: 'Action' },
   {id: 'reject', label: ''}
 ];

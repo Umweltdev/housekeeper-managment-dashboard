@@ -21,7 +21,7 @@ import FormProvider from 'src/components/hook-form';
 import { useSnackbar } from 'src/components/snackbar';
 
 import InvoiceNewEditDetails from './invoice-new-edit-details';
-import InvoiceNewEditAddress from './invoice-new-edit-address';
+import InvoiceNewEditAddress from './inventory-new-edit-address';
 import InvoiceNewEditStatusDate from './invoice-new-edit-status-date';
 
 // ----------------------------------------------------------------------

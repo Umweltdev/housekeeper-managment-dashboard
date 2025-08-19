@@ -22,8 +22,6 @@ import {
   TableContainer,
 } from '@mui/material';
 
-import { useGetRoomTypes } from 'src/api/roomType';
-
 import { fDate } from 'src/utils/format-time';
 import { formatNairaAmountLong } from 'src/utils/format-naira-short';
 
@@ -39,7 +37,7 @@ import {
 function UserBookingTable({ id }) {
   const { user: currentUser } = useGetUser(id);
   const { bookings } = useGetBookings();
-  const { roomTypes } = useGetRoomTypes();
+  
   const { floor } = useGetFloors();
   const { cancelBooking } = useCancelBooking();
   const { checkoutBooking } = useCheckoutBooking();
