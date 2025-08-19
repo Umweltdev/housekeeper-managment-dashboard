@@ -72,7 +72,7 @@ export default function RequestInventoryTableRow({
         <TableCell>{quantity}</TableCell>
         <TableCell>{parLevel}</TableCell>
         <TableCell>{requestedBy}</TableCell>
-        <TableCell>
+        {/* <TableCell>
           <Label
             variant="soft"
             color={
@@ -85,7 +85,7 @@ export default function RequestInventoryTableRow({
           >
             {status === 'Requested' ? 'Pending' : status}
           </Label>
-        </TableCell>
+        </TableCell> */}
 
         <TableCell align="center" sx={{ px: 1 }}>
           <Stack direction="row" spacing={1} justifyContent="center">

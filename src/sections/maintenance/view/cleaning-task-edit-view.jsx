@@ -1,44 +1,34 @@
-import * as Yup from 'yup';
+
 import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 // Material UI Components
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-import Paper from '@mui/material/Paper';
-import { MenuItem } from '@mui/material';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Unstable_Grid2';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { Alert, MenuItem, Snackbar } from '@mui/material';
 
 // Custom Components
-import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
 import { fData } from 'src/utils/format-number';
 
 import FormProvider, { RHFTextField, RHFUploadAvatar } from 'src/components/hook-form';
 
-import CheckoutPage from '../CheckoutPage';
-import { CLEANING_TASKS } from './cleaning-tasks';
+import { CLEANING_TASKS } from './maintenance-tasks';
 
-export default function UserNewEditForm({ task }) {
+export default function UserNewEditForm({ maintenance }) {
   const router = useRouter();
-  const [openCheckoutModal, setOpenCheckoutModal] = useState(false);
-  const [roomDetails, setRoomDetails] = useState(null);
-  const [additionalCharges, setAdditionalCharges] = useState(0);
-  const [assignee, setAssignee] = useState('')
-  const [area, setArea] = useState('')
+  const [assignee, setAssignee] = useState(maintenance.requestedBy || '')
   const [isSaving, setIsSaving] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [status, setStatus] = useState(maintenance.status || '')
 
   const methods = useForm({
   });
@@ -70,11 +60,7 @@ export default function UserNewEditForm({ task }) {
     [setValue]
   );
 
-  const handleCloseCheckoutModal = () => {
-    setOpenCheckoutModal(false);
-  };
-
-    const handleSaveChanges = () => {
+  const handleSaveChanges = () => {
     setIsSaving(true);
 
     setTimeout(() => {
@@ -94,7 +80,7 @@ export default function UserNewEditForm({ task }) {
         <Grid xs={12} md={6}>
           <Card sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
-              Edit Maintenance Progress - #{task.itemName}
+              Edit Maintenance Progress - #{maintenance.itemName}
             </Typography>
             <Divider sx={{ mb: 3 }} />
 
@@ -108,35 +94,35 @@ export default function UserNewEditForm({ task }) {
                   onChange={(e) => setAssignee(e.target.value)}
                 >
                   {
-                      [...new Set(CLEANING_TASKS.map(item => item.requestedBy))].map((name, idx) => (
-                          <MenuItem value={name} key={idx}>
-                          {name}
-                          </MenuItem>
-                      ))
+                    [...new Set(CLEANING_TASKS.map(item => item.requestedBy))].map((name, idx) => (
+                      <MenuItem value={name} key={idx}>
+                        {name}
+                      </MenuItem>
+                    ))
                   }
 
                 </TextField>
               </Grid>
               <Grid xs={12}>
-                <RHFTextField name="lastName" label="Room/Area" fullWidth />
+                <RHFTextField name="lastName" label={maintenance.itemName || "Room/Area"} fullWidth />
               </Grid>
               <Grid xs={12}>
-                <RHFTextField name="lastName" label="Task Description" fullWidth />
+                <RHFTextField name="lastName" label={maintenance.issue || "Maintenance Description"} fullWidth />
               </Grid>
               <Grid xs={12}>
                 <TextField
                   select
                   fullWidth
                   label="Maintenance progress"
-                  value={assignee}
-                  onChange={(e) => setAssignee(e.target.value)}
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
                 >
                   {
-                      [...new Set(CLEANING_TASKS.map(item => item.status))].map((name, idx) => (
-                          <MenuItem value={name} key={idx}>
-                          {name}
-                          </MenuItem>
-                      ))
+                    [...new Set(CLEANING_TASKS.map(item => item.status))].map((name, idx) => (
+                      <MenuItem value={name} key={idx}>
+                        {name}
+                      </MenuItem>
+                    ))
                   }
 
                 </TextField>
@@ -147,7 +133,7 @@ export default function UserNewEditForm({ task }) {
 
         {/* Right Column - Room Details */}
         <Grid xs={12} md={6}>
-          <Card sx={{ p: 3 }}>
+          <Card sx={{ p: 3, height: '100%' }}>
             <Typography variant="h6" gutterBottom>
               Attach maintenance image
             </Typography>
@@ -177,43 +163,39 @@ export default function UserNewEditForm({ task }) {
           </Card>
         </Grid>
       </Grid>
-
-      {/* Checkout Modal */}
-      <Dialog
-        open={openCheckoutModal}
-        onClose={handleCloseCheckoutModal}
-        maxWidth="md"
-        fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: 2,
-          },
-        }}
+      <div className='mt-6'>
+        <Grid xs={12} marginTop={3}>
+          <Stack direction="row" spacing={2} justifyContent="flex-end">
+            <Button variant="outlined" 
+              onClick={() => router.push('/dashboard/maintenance')}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSaveChanges}
+            >
+              {isSaving ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </Stack>
+        </Grid>
+      </div>
+       {/* Snackbar */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={1500}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <CheckoutPage roomDetails={roomDetails} additionalCharges={additionalCharges} />
-      </Dialog>
-        <div className='mt-6'>
-          <Grid xs={12} marginTop={3}>
-              <Stack direction="row" spacing={2} justifyContent="flex-end">
-                <Button variant="outlined" 
-                onClick={()=> router.push('/dashboard/maintenance')}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSaveChanges}
-                >
-                  Edit Request
-                </Button>
-              </Stack>
-            </Grid>
-        </div>
+        <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
+          Changes saved successfully!
+        </Alert>
+      </Snackbar>
     </FormProvider>
   );
 }
 
 UserNewEditForm.propTypes = {
-  task: PropTypes.object,
+  maintenance: PropTypes.object,
 };

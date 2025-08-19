@@ -27,12 +27,12 @@ const STATUS_COLORS = {
   'Low Stock': 'warning',
 };
 
-export default function CleaningTaskEditForm({ task }) {
+export default function CleaningTaskEditForm({ inventory }) {
   const router = useNavigate();
 
-  const [itemName, setItemName] = useState(task.itemName);
-  const [parLevel, setParLevel] = useState(task.parLevel || 0);
-  const [quantity, setQuantity] = useState(task.quantity || 0);
+  const [itemName, setItemName] = useState(inventory.itemName || '');
+  const [parLevel, setParLevel] = useState(inventory.parLevel || 0);
+  const [quantity, setQuantity] = useState(inventory.quantity || 0);
   const [isSaving, setIsSaving] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
@@ -56,14 +56,14 @@ export default function CleaningTaskEditForm({ task }) {
           <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
             <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
               <Typography variant="h6" component="h2">
-                Inventory: {task.itemName}
+                Inventory: {inventory.itemName}
               </Typography>{' '}
               <Label
                 variant="soft"
-                color={STATUS_COLORS[task.status] || 'default'}
+                color={STATUS_COLORS[inventory.status] || 'default'}
                 sx={{ textTransform: 'capitalize' }}
               >
-                {task.status}
+                {inventory.status}
               </Label>
             </Stack>
 
@@ -86,7 +86,7 @@ export default function CleaningTaskEditForm({ task }) {
                   onChange={(e) => setParLevel(Number(e.target.value))}
                   fullWidth
                 />
-                <Chip label={task.parLevel} color="info" size="small" variant="soft" />
+                <Chip label={inventory.parLevel} color="info" size="small" variant="soft" />
               </Stack>
               {/* Quantity */}
               <Stack direction="row" alignItems="center" spacing={1}>
@@ -97,7 +97,7 @@ export default function CleaningTaskEditForm({ task }) {
                   onChange={(e) => setQuantity(Number(e.target.value))}
                   fullWidth
                 />
-                <Chip label={task.quantity} color="primary" size="small" variant="soft" />
+                <Chip label={inventory.quantity} color="primary" size="small" variant="soft" />
               </Stack>
             </Stack>
           </Paper>
@@ -149,7 +149,7 @@ export default function CleaningTaskEditForm({ task }) {
 }
 
 CleaningTaskEditForm.propTypes = {
-  task: PropTypes.shape({
+  inventory: PropTypes.shape({
     id: PropTypes.string.isRequired,
     itemName: PropTypes.string.isRequired,
     requestDate: PropTypes.string,

@@ -34,7 +34,7 @@ import { useTable, getComparator } from 'src/components/table';
 
 import { useGetBookings } from 'src/api/booking';
 
-import InvoiceListViewEdit from './invoice-list-viewEdit';
+import InvoiceListViewEdit from './inventory-list-viewEdit';
 import InvoiceAnalytic from '../invoice-analytic';
 import RequestInventoryListView from './request-inventory-list-view';
 

@@ -142,16 +142,16 @@ export function useNavData() {
             path: paths.dashboard.maintenance.root,
             icon: ICONS.maintenance,
           },
-          {
-            title: t('schedule'),
-            path: paths.dashboard.schedule.root,
-            icon: ICONS.calendar,
-          },
-          {
-            title: t('Training'),
-            path: paths.dashboard.training.root,
-            icon: ICONS.kanban,
-          },
+          // {
+          //   title: t('schedule'),
+          //   path: paths.dashboard.schedule.root,
+          //   icon: ICONS.calendar,
+          // },
+          // {
+          //   title: t('Training'),
+          //   path: paths.dashboard.training.root,
+          //   icon: ICONS.kanban,
+          // },
 
           // ORDER
           // {

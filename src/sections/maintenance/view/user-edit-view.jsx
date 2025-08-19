@@ -9,10 +9,9 @@ import { paths } from 'src/routes/paths';
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import { useGetUser } from 'src/api/user';
-import { CLEANING_TASKS } from './cleaning-tasks';
+import { CLEANING_TASKS } from './maintenance-tasks';
 
 import CleaningTaskEditForm from './cleaning-task-edit-view';
-import UserNewEditForm from '../user-new-edit-form';
 // import { get } from 'lodash';
 
 // ----------------------------------------------------------------------
@@ -21,7 +20,7 @@ export default function TaskEditView({ id }) {
   const settings = useSettingsContext();
   const { user } = useGetUser(id);
 
-  const task = CLEANING_TASKS.find((t) => t.id.toString() === id);
+  const maintenance = CLEANING_TASKS.find((t) => t.id.toString() === id);
 
   // const getUserDetails = async (userId) => {
   //   try {
@@ -32,11 +31,6 @@ export default function TaskEditView({ id }) {
   //     console.error(error);
   //   }
   // };
-
-  useEffect(() => {
-    // getUserDetails(id);
-    console.log(task)
-  }, [task]);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -57,10 +51,7 @@ export default function TaskEditView({ id }) {
           mb: { xs: 3, md: 5 },
         }}
       />
-
-      {/* <UserNewEditForm currentUser={booking} /> */}
-      <CleaningTaskEditForm task={task} />
-      {/* <UserNewEditForm /> */}
+      <CleaningTaskEditForm maintenance={maintenance} />
     </Container>
   );
 }

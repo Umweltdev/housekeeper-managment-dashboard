@@ -39,10 +39,10 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import { CLEANING_TASKS } from './cleaning-tasks';
-import InvoiceTableToolbar from './invoice-table-toolbar';
+import { CLEANING_TASKS } from './inventory-item';
+import InvoiceTableToolbar from './inventory-table-toolbar';
 import CleaningTaskTableRow from './cleaning-task-edit-row';
-import InvoiceTableFiltersResult from './invoice-table-filters-result';
+import InvoiceTableFiltersResult from './inventory-table-filters-result';
 
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
