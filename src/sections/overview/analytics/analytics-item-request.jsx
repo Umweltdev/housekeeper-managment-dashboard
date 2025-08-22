@@ -5,7 +5,7 @@ import { Card, CardHeader, Box, FormControl, InputLabel, Select, MenuItem } from
 
 import Chart, { useChart } from 'src/components/chart';
 
-export default function AnalyticsItemRequestBreakdown({ title, subheader, data }) {
+export default function AnalyticsItemRequest({ title, subheader, data }) {
   const [range, setRange] = useState('day');
 
   const selectedData = data[range] || [];
@@ -39,31 +39,20 @@ export default function AnalyticsItemRequestBreakdown({ title, subheader, data }
   ];
 
   return (
-    <Card>
+    <Card sx={{height: '100%'}}>
       <CardHeader
         title={title}
         subheader={subheader}
-        action={
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>Range</InputLabel>
-            <Select value={range} label="Range" onChange={(e) => setRange(e.target.value)}>
-              <MenuItem value="day">Day</MenuItem>
-              <MenuItem value="week">Week</MenuItem>
-              <MenuItem value="month">Month</MenuItem>
-              <MenuItem value="year">Year</MenuItem>
-            </Select>
-          </FormControl>
-        }
       />
 
-      <Box sx={{ mx: 3 }}>
+      <Box sx={{ mx: 3, height: '100%'}}>
         <Chart dir="ltr" type="bar" series={chartSeries} options={chartOptions} height={360} />
       </Box>
     </Card>
   );
 }
 
-AnalyticsItemRequestBreakdown.propTypes = {
+AnalyticsItemRequest.propTypes = {
   title: PropTypes.string,
   subheader: PropTypes.string,
   data: PropTypes.object.isRequired,

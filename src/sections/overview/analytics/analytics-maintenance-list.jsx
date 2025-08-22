@@ -6,7 +6,7 @@ import { Card, CardHeader, Box, FormControl, InputLabel, Select, MenuItem } from
 import Chart, { useChart } from 'src/components/chart';
 
 export default function AnalyticsItemRequestBreakdown({ title, subheader, data }) {
-  const [range, setRange] = useState('day');
+  const [range, setRange] = useState('month');
 
   const selectedData = data[range] || [];
 

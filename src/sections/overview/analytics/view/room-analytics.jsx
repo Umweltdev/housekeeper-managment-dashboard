@@ -1,23 +1,24 @@
 import { Link } from 'react-router-dom';
-import { useState, useRef, forwardRef } from 'react';
+import { useState, forwardRef } from 'react';
 
 import { Box } from '@mui/system';
+import { Button } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import Container from '@mui/material/Container';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import { Button, Select, MenuItem } from '@mui/material';
 
 import { useSettingsContext } from 'src/components/settings';
-import AnalyticsConversionRates from '../analytics-conversion-rates';
+
+import RoomPriority from '../room-priority';
 import AppAreaInstalled from '../app-area-installed';
 import AppCurrentDownload from '../app-current-download';
 import AnalyticsWidgetSummary from '../analytics-widget-summary';
-import RoomPriority from '../room-priority';
+import AnalyticsConversionRates from '../analytics-conversion-rates';
 
 // ----------------------------------------------------------------------
 
-const MyPerformance = forwardRef((props, ref) => {
+const RoomAnalytics = forwardRef((props, ref) => {
   const settings = useSettingsContext();
   const theme = useTheme();
 
@@ -113,53 +114,22 @@ const MyPerformance = forwardRef((props, ref) => {
         }}
       >
         <Typography variant="h5" sx={{ mt: 5 }}>
-          My Task Performance
+          Room Status Analytics
         </Typography>
 
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button component={Link} to="/dashboard/task" variant="contained">
+          <Button variant="contained">
             View Detailed Report
           </Button>
         </Box>
-      </Grid>
-
-      <Grid container spacing={3}>
-        <Grid xs={12} sm={6} md={4}>
-          <AnalyticsWidgetSummary
-            title="Total Rooms Cleaned"
-            total="80"
-            color="info"
-            icon={<img alt="icon" src="/assets/icons/glass/bed.png" />}
-          />
-        </Grid>
-
-        <Grid xs={12} sm={6} md={4}>
-          <AnalyticsWidgetSummary
-            title="Avg Cleaning Time"
-            total="40"
-            color="warning"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
-            unit="min"
-          />
-        </Grid>
-
-        <Grid xs={12} sm={6} md={4}>
-          <AnalyticsWidgetSummary
-            title="Guest Satisfaction (NPS)"
-            total="4"
-            color="success"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
-            unit="/5"
-          />
-        </Grid>
       </Grid>
 
       <Grid container spacing={3} sx={{ mt: 2, alignItems: 'stretch' }}>
         <Grid item xs={12} md={8}>
           <Box sx={{ height: '100%' }}>
             <AppAreaInstalled
-              title="Task Performance Index"
-              subheader="Distribution of dirty, cleaned, and inspected tasks"
+              title="Room Status Data"
+              subheader="Distribution of dirty, cleaned, and inspected rooms"
               chart={{
                 categories: chartRangeData[range].categories,
                 series:
@@ -202,32 +172,25 @@ const MyPerformance = forwardRef((props, ref) => {
 
       <Grid container spacing={3} sx={{ mt: 2 }}>
         {' '}
-        <Grid item xs={12} md={6}>
-          <RoomPriority
-            title="Room Priority Distribution"
-            subheader="Static count of High, Medium, and Low"
-            data={priorityData}
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={12}>
           <AnalyticsConversionRates
             sx={{ height: 440 }}
             title="Average Cleaning Time per Room"
-            subheader="(+12%) compared to last year"
+            subheader="R-Num per hour"
             chart={{
               series: [
-                { label: 'Jan', value: 42 },
-                { label: 'Feb', value: 39 },
-                { label: 'Mar', value: 41 },
-                { label: 'Apr', value: 37 },
-                { label: 'May', value: 44 },
-                { label: 'Jun', value: 46 },
-                { label: 'Jul', value: 49 },
-                { label: 'Aug', value: 45 },
-                { label: 'Sept', value: 43 },
-                { label: 'Oct', value: 47 },
-                { label: 'Nov', value: 40 },
-                { label: 'Dec', value: 42 },
+                { label: 'R-101', value: 42 },
+                { label: 'R-102', value: 39 },
+                { label: 'R-103', value: 41 },
+                { label: 'R-104', value: 37 },
+                { label: 'R-105', value: 44 },
+                { label: 'R-106', value: 46 },
+                { label: 'R-107', value: 49 },
+                { label: 'R-108', value: 45 },
+                { label: 'R-109', value: 43 },
+                { label: 'R-201', value: 47 },
+                { label: 'R-202', value: 40 },
+                { label: 'R-203', value: 42 },
               ],
               options: {
                 yaxis: {
@@ -249,4 +212,4 @@ const MyPerformance = forwardRef((props, ref) => {
   );
 });
 
-export default MyPerformance;
+export default RoomAnalytics;
