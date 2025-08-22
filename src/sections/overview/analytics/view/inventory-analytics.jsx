@@ -5,16 +5,16 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { useTheme } from '@mui/material/styles';
 import { Box, Container, Typography, Button, Select, FormControl, InputLabel } from '@mui/material';
 
-import AnalyticsCleaningTime from '../analytices-room-series';
-import AnalyticsVerticalChart from '../analytics-vertical-chart';
-import AnalyticsConversionRates from '../analytics-conversion-rates';
+// import AnalyticsCleaningTime from '../analytices-room-series';
+// import AnalyticsVerticalChart from '../analytics-vertical-chart';
+import AnalyticsInventoryShortage from '../analytics-inventory-shortages';
+// import AnalyticsConversionRates from '../analytics-conversion-rates';
 import AnalyticsItemRequestBreakdown from '../analytics-item-request-breakdown';
 import RoomStatusDiscrepancyChart from '../analytics-room-status-descripancy-chart';
-import AnalyticsInventoryShortage from '../analytics-inventory-shortages';
 
 const InventoryAnalytics = forwardRef((props, ref) => {
   const theme = useTheme();
-  const [range, setRange] = useState('month'); // Filter: day | week | month | year
+  // const [range, setRange] = useState('month'); // Filter: day | week | month | year
 
   const requestData = {
     day: [

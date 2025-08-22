@@ -5,13 +5,12 @@ import { Box, Container, Typography, Button, Select, FormControl, InputLabel } f
 import Grid from '@mui/material/Unstable_Grid2';
 import { useTheme } from '@mui/material/styles';
 
-import AnalyticsConversionRates from '../analytics-conversion-rates';
-import AnalyticsVerticalChart from '../analytics-vertical-chart';
+// import AnalyticsConversionRates from '../analytics-conversion-rates';
+// import AnalyticsVerticalChart from '../analytics-vertical-chart';
 import AnalyticsItemRequest from '../analytics-item-request';
-import RoomStatusDiscrepancyChart from '../analytics-room-status-descripancy-chart';
+// import RoomStatusDiscrepancyChart from '../analytics-room-status-descripancy-chart';
 import MaintenanceRequestChart from '../analytics-maintenance-list';
 import AnalyticsMaintenanceRecurring from '../analytic-maintenance-reccuring';
-import ParetoChart from '../analytics-pareto-chart';
 
 const MaintenanceAnalytics = forwardRef((props, ref) => {
   const theme = useTheme();

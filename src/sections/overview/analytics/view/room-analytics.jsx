@@ -10,10 +10,10 @@ import Typography from '@mui/material/Typography';
 
 import { useSettingsContext } from 'src/components/settings';
 
-import RoomPriority from '../room-priority';
+// import RoomPriority from '../room-priority';
 import AppAreaInstalled from '../app-area-installed';
 import AppCurrentDownload from '../app-current-download';
-import AnalyticsWidgetSummary from '../analytics-widget-summary';
+// import AnalyticsWidgetSummary from '../analytics-widget-summary';
 import AnalyticsConversionRates from '../analytics-conversion-rates';
 
 // ----------------------------------------------------------------------
