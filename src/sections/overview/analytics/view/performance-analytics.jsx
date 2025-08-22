@@ -7,7 +7,6 @@ import Container from '@mui/material/Container';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { LineChart } from "@mui/x-charts/LineChart";
 import { Button, Select, MenuItem, Card, CardContent, ToggleButton, ToggleButtonGroup, } from '@mui/material';
 
 import { useSettingsContext } from 'src/components/settings';
