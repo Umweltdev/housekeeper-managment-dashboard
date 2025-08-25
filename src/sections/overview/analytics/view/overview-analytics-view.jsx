@@ -1,109 +1,57 @@
-import { Link } from 'react-router-dom';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
-import { Box, useTheme } from '@mui/system';
-import Grid from '@mui/material/Unstable_Grid2';
+import { Box } from '@mui/system';
 import Container from '@mui/material/Container';
+import { Select, MenuItem } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { Button, Select, MenuItem } from '@mui/material';
 
-import { useGetRooms } from 'src/api/room';
-import { useGetFloors } from 'src/api/floor';
-import { useGetBookings } from 'src/api/booking';
-import { useGetRoomTypes } from 'src/api/roomType';
-import { info, success, warning } from 'src/theme/palette';
+// import { useGetRooms } from 'src/api/room';
+// import { useGetFloors } from 'src/api/floor';
+// import { useGetBookings } from 'src/api/booking';
+// import { useGetRoomTypes } from 'src/api/roomType';
+// import { info, success, warning } from 'src/theme/palette';
 
 import { useSettingsContext } from 'src/components/settings';
 
-// import AnalyticsNews from '../analytics-news';
-// import AnalyticsTasks from '../analytics-tasks';
-// import AnalyticsCurrentVisits from '../analytics-current-visits';
-// import AnalyticsOrderTimeline from '../analytics-order-timeline';
-// import AnalyticsWebsiteVisits from '../analytics-website-visits';
-import AnalyticsWidgetSummary from '../analytics-widget-summary';
-// import AnalyticsTrafficBySite from '../analytics-traffic-by-site';
-// import AnalyticsCurrentSubject from '../analytics-current-subject';
-// import AnalyticsConversionRates from '../analytics-conversion-rates';
-import InquiriesChart from '../analytics-Inquiry-chart';
-import AnalyticsPeakChart from '../analytics-peak-chart';
-import AnalyticsStackChart from '../analytics-stack-chart';
-import InquiryTypeChart from '../analytics-inquiry-type-chart';
-import AnalyticsWebsiteVisits from '../analytics-website-visits';
-import AnalyticsVerticalChart from '../analytics-vertical-chart';
-// import CheckInAnalytics from './performance-analytics';
-import AnalyticsAggregateChart from '../analytics-aggregate-chart';
-import AnalyticsStackBarByFloor from '../analytic-stack-bar-chart';
-import AnalyticsConversionRates from '../analytics-conversion-rates';
-import AnalyticsSimpleCardChart from '../analytics-simple-card-chart';
-import AppWidgetSummaryTotal from '../../app/app-widget-summary-total';
-import AnalyticsAverageTimeChart from '../analytics-average-time-chart';
-import AnalyticsResolutionTimeCard from '../analytics-resolution-time-card';
-import RoomStatusDifferentialChart from '../analytics-room-status-diff-chart';
-import AppWidgetSummaryReservation from '../../app/app-widget-summary-reservation';
-import RoomStatusDiscrepancyChart from '../analytics-room-status-descripancy-chart';
-import InquiryResolutionTimeChart from '../analytics-average-resolution-time-chart';
-import AnalyticsSatisfactionDonutChart from '../analytics-satisfaction-donut-chart';
-import MyPerformance from './my-performance';
-import MyTask from './my-task';
-import UserInventory from './user-inventory';
-import UserTraining from './user-training';
-import {
-  inquiryTypeData,
-  totalComplaints,
-  cancellationData,
-  dummyInquiryData,
-  reservationsData,
-  totalRevenueData,
-  resolutionTimeData,
-  guestSatisfactionData,
-  BOOKING_LEAD_TIME_DATA,
-  dummyResolutionTimeData,
-  RESERVATION_CHANNEL_DATA,
-  roomStatusDiscrepancyData,
-} from './dummData';
-
-// ----------------------------------------------------------------------
+import RoomAnalytics from './room-analytics';
+import StaffAnalysis from './staff-analytics';
+import GuestAnalytics from './guest-analytics';
+import InventoryAnalytics from './inventory-analytics';
+import PerformanceAnalytics from './performance-analytics';
+import MaintenanceAnalytics from './maintenance-analytics';
 
 export default function OverviewAnalyticsView() {
   const settings = useSettingsContext();
-  const { bookings } = useGetBookings();
-  const { rooms } = useGetRooms();
-  const { roomTypes } = useGetRoomTypes();
-  const { floor } = useGetFloors();
-  const [range, setRange] = useState('week');
-  const [leadRange, setLeadRange] = useState('week');
+  // const { bookings } = useGetBookings();
+  // const { rooms } = useGetRooms();
+  // const { roomTypes } = useGetRoomTypes();
+  // const { floor } = useGetFloors();
+  // const [range, setRange] = useState('week');
+  // const [leadRange, setLeadRange] = useState('week');
 
-  console.log(bookings);
-  console.log(floor);
-
-  console.log(rooms);
-  console.log(roomTypes);
 
   const performanceRef = useRef(null);
-  const taskRef = useRef(null);
+  const staffRef = useRef(null);
+  const roomRef = useRef(null)
   const inventoryRef = useRef(null);
   const maintenanceRef = useRef(null);
-  const trainingRef = useRef(null);
-  const paymentRef = useRef(null);
+  const guestRef = useRef(null);
 
   const handleScrollTo = (section) => {
     if (section === 'performance' && performanceRef.current) {
       performanceRef.current.scrollIntoView({ behavior: 'smooth' });
-    } else if (section === 'task' && taskRef.current) {
-      taskRef.current.scrollIntoView({ behavior: 'smooth' });
-    } else if (section === 'reservation' && inventoryRef.current) {
+    } else if (section === 'roomRef' && roomRef.current) {
+      roomRef.current.scrollIntoView({ behavior: 'smooth' });
+    } else if (section === 'inventory' && inventoryRef.current) {
       inventoryRef.current.scrollIntoView({ behavior: 'smooth' });
     } else if (section === 'maintenance' && maintenanceRef.current) {
       maintenanceRef.current.scrollIntoView({ behavior: 'smooth' });
-    } else if (section === 'training' && trainingRef.current) {
-      trainingRef.current.scrollIntoView({ behavior: 'smooth' });
-    } else if (section === 'training' && paymentRef.current) {
-      paymentRef.current.scrollIntoView({ behavior: 'smooth' });
+    } else if (section === 'guest' && guestRef.current) {
+      guestRef.current.scrollIntoView({ behavior: 'smooth' });
+    } else if (section === 'staff' && staffRef.current) {
+      staffRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
-
-  const theme = useTheme();
-  // console.log(bookings);
 
   return (
     <>
@@ -136,26 +84,34 @@ export default function OverviewAnalyticsView() {
             <MenuItem value="" disabled>
               Jump to section...
             </MenuItem>
-            <MenuItem value="performance">My Task Performance</MenuItem>
-            <MenuItem value="task">My Tasks Analytics</MenuItem>
-            <MenuItem value="reservation">Inventory Usage Analytics</MenuItem>
-            <MenuItem value="training">Training & Resources</MenuItem>
+            <MenuItem value="performance">Room Cleaning Performance</MenuItem>
+            <MenuItem value="staff">Housekeeping Staff Productivity</MenuItem>
+            <MenuItem value="room">Room Status</MenuItem>
+            <MenuItem value="inventory">Inventory Management</MenuItem>
+            <MenuItem value="maintenance">Maintenance Requests</MenuItem>
+            <MenuItem value="guest">Guest Satisfaction</MenuItem>
           </Select>
         </Box>
       </Container>
       {/* <Divider sx={{ my: 2 }} /> */}
       <Box>
         <Container maxWidth={settings.themeStretch ? false : 'xl'} ref={performanceRef}>
-          <MyPerformance />
+          <PerformanceAnalytics/>
         </Container>
-        <Container maxWidth={settings.themeStretch ? false : 'xl'} ref={taskRef}>
-          <MyTask />
+        <Container maxWidth={settings.themeStretch ? false : 'xl'} ref={staffRef}>
+          <StaffAnalysis/>
+        </Container>
+        <Container maxWidth={settings.themeStretch ? false : 'xl'} ref={roomRef}>
+          <RoomAnalytics/>
         </Container>
         <Container maxWidth={settings.themeStretch ? false : 'xl'} ref={inventoryRef}>
-          <UserInventory />
+          <InventoryAnalytics/>
         </Container>
-        <Container maxWidth={settings.themeStretch ? false : 'xl'} ref={trainingRef}>
-          <UserTraining />
+        <Container maxWidth={settings.themeStretch ? false : 'xl'} ref={maintenanceRef}>
+          <MaintenanceAnalytics/>
+        </Container>
+        <Container maxWidth={settings.themeStretch ? false : 'xl'} ref={guestRef}>
+          <GuestAnalytics />
         </Container>
       </Box>
     </>

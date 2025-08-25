@@ -1,18 +1,20 @@
-import { forwardRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { forwardRef, useState } from 'react';
 
-import { Box, Container, Typography, Button, Select, FormControl, InputLabel } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { useTheme } from '@mui/material/styles';
+import { Box, Container, Typography, Button, Select, FormControl, InputLabel } from '@mui/material';
 
-import AnalyticsConversionRates from '../analytics-conversion-rates';
-import AnalyticsVerticalChart from '../analytics-vertical-chart';
+// import AnalyticsCleaningTime from '../analytices-room-series';
+// import AnalyticsVerticalChart from '../analytics-vertical-chart';
+import AnalyticsInventoryShortage from '../analytics-inventory-shortages';
+// import AnalyticsConversionRates from '../analytics-conversion-rates';
 import AnalyticsItemRequestBreakdown from '../analytics-item-request-breakdown';
 import RoomStatusDiscrepancyChart from '../analytics-room-status-descripancy-chart';
 
-const UserInventory = forwardRef((props, ref) => {
+const InventoryAnalytics = forwardRef((props, ref) => {
   const theme = useTheme();
-  const [range, setRange] = useState('month'); // Filter: day | week | month | year
+  // const [range, setRange] = useState('month'); // Filter: day | week | month | year
 
   const requestData = {
     day: [
@@ -51,17 +53,17 @@ const UserInventory = forwardRef((props, ref) => {
 
   // Static data for different time ranges
   const requestVsAcceptedByMonth = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+    labels: ['R-101', 'R-102', 'R-103', 'R-104', 'R-105', 'R-106', 'R-107'],
     colors: ['#00B8D9', '#36B37E'], // Requested, Accepted
     series: [
       {
         name: 'Requested',
-        data: [50, 60, 55, 70, 65, 80, 75],
+        data: [5000, 6000, 5500, 7000, 6500, 8000, 7500],
       },
-      {
-        name: 'Accepted',
-        data: [45, 55, 50, 65, 60, 72, 70],
-      },
+      // {
+      //   name: 'Accepted',
+      //   data: [45, 55, 50, 65, 60, 72, 70],
+      // },
     ],
   };
 
@@ -78,7 +80,7 @@ const UserInventory = forwardRef((props, ref) => {
         }}
       >
         <Typography variant="h5" sx={{ mt: 5 }}>
-          Inventory Usage
+          Inventory Analytics
         </Typography>
 
         <Box sx={{ display: 'flex', gap: 2 }}>
@@ -93,7 +95,7 @@ const UserInventory = forwardRef((props, ref) => {
         <Grid xs={12} md={6}>
           <Box sx={{ height: '100%' }}>
             <AnalyticsItemRequestBreakdown
-              title="Item Request Overview"
+              title="Item Usage"
               subheader="By frequency and quantity"
               data={requestData}
             />
@@ -104,10 +106,17 @@ const UserInventory = forwardRef((props, ref) => {
         <Grid xs={12} md={6}>
           <Box sx={{ height: '100%' }}>
             <RoomStatusDiscrepancyChart
-              title="Requested vs Accepted Inventory"
+              title="Cost of Supplies per Room"
               subheader="Monthly comparison"
               chart={requestVsAcceptedByMonth}
             />
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={8}>
+          <Box sx={{ height: '100%' }}>
+            <AnalyticsInventoryShortage
+            title="Shortage Analytics"
+            subheader="Measurements of waste or overuse of supplies"/>
           </Box>
         </Grid>
       </Grid>
@@ -115,4 +124,4 @@ const UserInventory = forwardRef((props, ref) => {
   );
 });
 
-export default UserInventory;
+export default InventoryAnalytics;

@@ -5,8 +5,8 @@ import { Card, CardHeader, Box, FormControl, InputLabel, Select, MenuItem } from
 
 import Chart, { useChart } from 'src/components/chart';
 
-export default function AnalyticsItemRequestBreakdown({ title, subheader, data }) {
-  const [range, setRange] = useState('day');
+export default function AnalyticsMaintenanceRecurring({ title, subheader, data }) {
+  const [range, setRange] = useState('month');
 
   const selectedData = data[range] || [];
 
@@ -45,12 +45,12 @@ export default function AnalyticsItemRequestBreakdown({ title, subheader, data }
         subheader={subheader}
         action={
           <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel>Range</InputLabel>
+            <InputLabel>Room</InputLabel>
             <Select value={range} label="Range" onChange={(e) => setRange(e.target.value)}>
-              <MenuItem value="day">Day</MenuItem>
-              <MenuItem value="week">Week</MenuItem>
-              <MenuItem value="month">Month</MenuItem>
-              <MenuItem value="year">Year</MenuItem>
+              <MenuItem value="day">Suit</MenuItem>
+              <MenuItem value="week">Standard</MenuItem>
+              <MenuItem value="month">Masters BedRoom</MenuItem>
+              <MenuItem value="year">Lounge</MenuItem>
             </Select>
           </FormControl>
         }
@@ -63,7 +63,7 @@ export default function AnalyticsItemRequestBreakdown({ title, subheader, data }
   );
 }
 
-AnalyticsItemRequestBreakdown.propTypes = {
+AnalyticsMaintenanceRecurring.propTypes = {
   title: PropTypes.string,
   subheader: PropTypes.string,
   data: PropTypes.object.isRequired,
